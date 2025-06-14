@@ -1,0 +1,82 @@
+# BEGIN CONSTRAINTS
+HeaderName,ConstrainType,ConstrainVariant,Default,ColWidth,Colours,Role,Autofill
+Id,int,,,,*=BLUE,PrimaryKey,False
+Archived,bool,True|False,False,,False=RED|True=GREY,Archiving,False
+Priority,,High|Medium|Low|Critical,Low,,high=RED|medium=YELLOW|low=BLUE|critical=MAGENTA,,True
+Status,,Not Started|In Progress|Done|Dependant|Backlog|Cancelled,Not Started,,not started=GREY|in progress=YELLOW|done=GREEN|Dependant=MAGENTA|Backlog=CYAN|Cancelled=BLUE,Status,True
+Task,,,,55,BUG:*=RED,Description,False
+Assignee,,,Sadbh,,,,False
+Project,,,,,,,False
+# END CONSTRAINTS
+Id,Task,Assignee,Status,Priority,Project,Archived
+1,Add Status role get function on TaskQueue,Sadbh,Done,High,,True
+2,Add default help menu or ls cmd when running with no args,Sadbh,Done,Low,,True
+3,Implement ColWidth constraint,Sadbh,Done,High,,True
+4,Implement mark cmd,Sadbh,Done,High,,True
+5,ls cmd: implement --whereand flag,Sadbh,Done,High,,True
+6,Implement alter command (multiple properties),Sadbh,Backlog,Low,,True
+7,Implement archive cmd,Sadbh,Done,Low,,True
+8,ls archive autofiltering,Sadbh,Done,Low,,True
+9,mark command on multiple ids,Sadbh,Done,Low,,True
+10,Concrete types on Constraint deserialization,Sadbh,Backlog,Low,,True
+11,ls --top N and --bottom N argument,Sadbh,Backlog,Low,,True
+12,Util function wrapper around tabulate() with global options,Sadbh,Done,Medium,,True
+13,"Implement column {add,move,rename,remove} command",Sadbh,Done,High,,True
+14,Case insensitive variants,Sadbh,Done,High,,True
+15,Autofill for ConstrainVariant columns,Sadbh,Done,Medium,,True
+16,update command on multiple ids,Sadbh,Done,Low,,True
+17,Setup git repo,Sadbh,Not Started,Low,,False
+18,Additional Status variants,Sadbh,Done,Low,,True
+19,Add --style option for tabulate,Sadbh,Not Started,Low,,False
+20,Implement Autofill constraint,Sadbh,Done,High,,True
+21,Migrate all task printing to util.pretty_print_table,Sadbh,Done,Low,,True
+22,Add decorators to cmds to reduce boilerplate,Sadbh,Not Started,High,,False
+23,add cmd: allow adding additional properties,Sadbh,Backlog,Medium,,True
+24,output using pretty_print_table msg_after for all commands,Sadbh,Done,High,,True
+25,Unknown task that was accidentally overwritten :P,Sadbh,Done,Low,,True
+26,Add --noclr global flag,Sadbh,Not Started,Low,,False
+27,Implement Hide constraint,Sadbh,In Progress,High,,False
+28,ls cmd: truncate based on height,Sadbh,Done,Low,,True
+29,Status messages in pretty_print_table(),Sadbh,Done,Low,,True
+30,BUG: Account for status msg len discrepancy,Sadbh,Not Started,Low,Bug Queue,False
+31,BUG: Mangled colours on grid borders when maxcolumns is set,Sadbh,Not Started,Low,Bug Queue,False
+32,Create makefile / install script,Sadbh,Backlog,Medium,,True
+33,Update strings refering to taskq,Sadbh,Done,Low,,True
+34,mark cmd: add --archive flag,Sadbh,Done,Low,,True
+35,Add ^_^,Sadbh,Done,Low,,True
+36,ls cmd: sorting by property,Sadbh,Done,Low,,True
+37,Migrate direct header references to Task.geti,Sadbh,Done,High,,True
+38,Finish constraint append cmd,Sadbh,Done,High,,True
+39,Add AssertionError handling,Sadbh,Backlog,Low,,True
+40,ls cmd: implement --whereor flag,Sadbh,Done,Low,,True
+41,ls cmd: --ids flag for plain output,Sadbh,Done,Low,,True
+42,BUG: pretty_print_table sometimes failing when 0 elements passed,Sadbh,Done,Low,Bug Queue,True
+43,"Update cmds using nargs=""*""",Sadbh,Done,Low,,True
+44,ls cmd: --copyids option,Sadbh,Not Started,Low,,False
+45,Global -q --quiet argument for cmd involving marking,Sadbh,Not Started,Low,,False
+46,Visual indicator for when cmd output is not ls,Sadbh,Done,Low,,True
+47,Implement different styles using OOP paradigm,Sadbh,Not Started,Low,,False
+48,constraint cmd: update subcommand,Sadbh,Backlog,Low,,True
+49,BUG: Status appears as done when outputting update result table,Sadbh,Cancelled,Medium,Bug Queue,True
+50,BUG: update cmd: allows invalid column to be set,Sadbh,Done,Low,Bug Queue,True
+51,BUG: Corners of table are sometimes the wrong colour,Sadbh,Done,Low,Bug Queue,True
+52,Support hex colours in Colours constraint,Sadbh,Not Started,Low,,False
+53,help cmd: add coloured output with logo,Sadbh,Not Started,Low,,False
+54,pretty_print_table: variants of indent symbols for different cmds,Sadbh,Dependant,High,,False
+55,blueprint cmd: test creation of new queue,Sadbh,Done,Low,,True
+56,create TaskQueue.smart_header_match and Task.get,Sadbh,Done,High,,True
+57,Account for failure case in TaskQueue.header_* methods,Sadbh,Not Started,High,,False
+58,show cmd: create command for displaying single task,Sadbh,Not Started,Low,,False
+59,migrate Task.update_column to smart system,Sadbh,Not Started,Medium,,False
+60,Global --less flag,Sadbh,Not Started,Low,,False
+61,Create colours.py module,Sadbh,Not Started,High,,False
+62,Implement AutoHeader constraint,Sadbh,Not Started,High,,False
+63,Autofilling names for AutoHeader columns,Sadbh,Dependant,High,,False
+64,Add --clear flag,Sadbh,Done,Low,,True
+65,ASCII logo design,Sadbh,Done,Medium,,True
+66,BUG: msg outputs not displaying smart matched headers,Sadbh,Backlog,Low,Bug Queue,True
+67,Coloured logo resource file,Sadbh,Done,Low,,True
+68,ls cmd: --oldest option,Sadbh,Done,Low,,True
+69,Remove TaskQueue.constraints key indexing,Sadbh,Not Started,Low,,False
+70,Bug test column cmd,Sadbh,Not Started,Low,Testing,False
+71,column cmd: output on subcommand success,Sadbh,Done,Low,,True
