@@ -53,9 +53,10 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
         parsing.serialize(args.path, tq)
 
-        util.pretty_print_table(
-            [], tq.headers, msg_before=msg_before, msg_after=msg_after
-        )
+        if not globals.QUIET_OPTION_SET:
+            util.pretty_print_table(
+                [], tq.headers, msg_before=msg_before, msg_after=msg_after
+            )
 
     parser.add_argument(
         "headers", nargs="*", help="headers to include in the new taskqueue"
@@ -244,12 +245,13 @@ def add(parser: ArgumentParser, root: ArgumentParser):
         new_task = Task.new_task(args.description, taskq)
         taskq.add_task(new_task)
 
-        util.pretty_print_table(
-            [new_task.to_display_row()],
-            taskq.headers,
-            msg_after=["added task to queue :3"],
-            indent_table=colours.Indents.ADD,
-        )
+        if not globals.QUIET_OPTION_SET:
+            util.pretty_print_table(
+                [new_task.to_display_row()],
+                taskq.headers,
+                msg_after=["added task to queue :3"],
+                indent_table=colours.Indents.ADD,
+            )
 
     parser.add_argument("description", help="description of new task")
 
@@ -291,14 +293,15 @@ def update(parser: ArgumentParser, root: ArgumentParser):
             task.update_column(column, args.value)
             table.append(task.to_display_row())
 
-        util.pretty_print_table(
-            table,
-            taskq.headers,
-            msg_after=[
-                f"updated id{'s' if len(args.ids) > 1 else ''} {', '.join(map(str, args.ids))}"
-            ],
-            indent_table=colours.Indents.UPDATE,
-        )
+        if not globals.QUIET_OPTION_SET:
+            util.pretty_print_table(
+                table,
+                taskq.headers,
+                msg_after=[
+                    f"updated id{'s' if len(args.ids) > 1 else ''} {', '.join(map(str, args.ids))}"
+                ],
+                indent_table=colours.Indents.UPDATE,
+            )
 
     parser.add_argument("ids", type=int, nargs="+", help="id of task to edit")
     parser.add_argument("column", help="column to update")
@@ -322,12 +325,15 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
         tlen = len(table)
         plural = "s" if tlen > 1 else ""
         ids_string = " ".join(map(str, args.ids))
-        util.pretty_print_table(
-            table,
-            taskq.headers,
-            msg_after=[f"removed {tlen} task{plural} with id{plural} {ids_string}"],
-            indent_table=colours.Indents.REMOVE,
-        )
+
+
+        if not globals.QUIET_OPTION_SET:
+            util.pretty_print_table(
+                table,
+                taskq.headers,
+                msg_after=[f"removed {tlen} task{plural} with id{plural} {ids_string}"],
+                indent_table=colours.Indents.REMOVE,
+            )
 
     parser.add_argument("ids", nargs="+", type=int, help="id of task to remove")
 
@@ -354,18 +360,19 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
 
             table.append(task.to_display_row())
 
-        util.pretty_print_table(
-            table,
-            taskq.headers,
-            msg_after=[
-                f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {constrained_value}!"
-            ],
-            indent_table=(
-                colours.Indents.MARK
-                if not args.archive
-                else colours.Indents.MARK_ARCHIVE
-            ),
-        )
+        if not globals.QUIET_OPTION_SET:
+            util.pretty_print_table(
+                table,
+                taskq.headers,
+                msg_after=[
+                    f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {constrained_value}!"
+                ],
+                indent_table=(
+                    colours.Indents.MARK
+                    if not args.archive
+                    else colours.Indents.MARK_ARCHIVE
+                ),
+            )
 
     parser.add_argument("ids", type=int, nargs="+", help="ids of task to edit")
     parser.add_argument("value", help="new status of task")
@@ -389,16 +396,17 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
             task.update_column(archive_col, str(args.undo))
             table.append(task.to_display_row())
 
-        util.pretty_print_table(
-            table,
-            taskq.headers,
-            msg_after=[
-                f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} archived :o"
-            ],
-            indent_table=(
-                colours.Indents.ARCHIVE if args.undo else colours.Indents.ARCHIVE_UNDO
-            ),
-        )
+        if not globals.QUIET_OPTION_SET:
+            util.pretty_print_table(
+                table,
+                taskq.headers,
+                msg_after=[
+                    f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} archived :o"
+                ],
+                indent_table=(
+                    colours.Indents.ARCHIVE if args.undo else colours.Indents.ARCHIVE_UNDO
+                ),
+            )
 
     parser.add_argument("ids", nargs="+", type=int, help="ids of task to archive")
     parser.add_argument("-u", "--undo", action="store_false", help="undo archive")
@@ -441,11 +449,13 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
             taskq.constraints[target] = Constraint.empty(target)
 
-            print(
-                util.star_symbol_surround(
-                    f"column {target} added", consts.STAR_MSG_OUTPUT_WIDTH
+
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        f"column {target} added", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="column name to add")
         return inner
@@ -461,12 +471,13 @@ def column(parser: ArgumentParser, root: ArgumentParser):
             taskq.headers.pop(cidx)
             taskq.headers.insert(args.index, target)
 
-            print(
-                util.star_symbol_surround(
-                    f"column {target} moved to index {args.index}",
-                    consts.STAR_MSG_OUTPUT_WIDTH,
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        f"column {target} moved to index {args.index}",
+                        consts.STAR_MSG_OUTPUT_WIDTH,
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="column to move")
         sparser.add_argument(
@@ -497,12 +508,13 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
             taskq.constraints[args.name] = constraint
 
-            print(
-                util.star_symbol_surround(
-                    f"column {old_name} renamed to {args.name}",
-                    consts.STAR_MSG_OUTPUT_WIDTH,
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        f"column {old_name} renamed to {args.name}",
+                        consts.STAR_MSG_OUTPUT_WIDTH,
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="column to rename")
         sparser.add_argument("name", help="new name of column")
@@ -524,12 +536,13 @@ def column(parser: ArgumentParser, root: ArgumentParser):
             if taskq.find_constraint(target):
                 del taskq.constraints[target]
 
-            print(
-                util.star_symbol_surround(
-                    f"column {target} successfully removed",
-                    consts.STAR_MSG_OUTPUT_WIDTH,
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        f"column {target} successfully removed",
+                        consts.STAR_MSG_OUTPUT_WIDTH,
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="column to delete")
         return inner
@@ -581,11 +594,12 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
                 k, _, v = pair.partition("=")
                 constraint.__dict__[k] = v
 
-            print(
-                util.star_symbol_surround(
-                    "constraint altered", consts.STAR_MSG_OUTPUT_WIDTH
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        "constraint altered", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="header name to add constraint to")
         sparser.add_argument("properties", nargs="+", help="properties to modify")
@@ -612,11 +626,12 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
             constraint.__dict__[column] = "|".join(parsed_column)
             taskq.constraints[target] = constraint
 
-            print(
-                util.star_symbol_surround(
-                    "constraint properties appended", consts.STAR_MSG_OUTPUT_WIDTH
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        "constraint properties appended", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="header name to add constraint to")
         sparser.add_argument("constraint", help="constraint column to modify")
@@ -636,11 +651,12 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
             ), "constraint with HeaderName {target} could not be found"
             del taskq.constraints[args.target]
 
-            print(
-                util.star_symbol_surround(
-                    "constraint removed", consts.STAR_MSG_OUTPUT_WIDTH
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        "constraint removed", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
                 )
-            )
 
         sparser.add_argument("target", help="header name of constraint to remove")
 
@@ -660,12 +676,6 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
             table = []
             for constraint in taskq.constraints.values():
                 table.append([constraint.__dict__[k] for k in headers])
-
-            txt = tabulate(
-                table,
-                headers=headers,
-                tablefmt="rounded_outline",
-            )
 
             util.pretty_print_table(table, headers)
 

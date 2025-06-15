@@ -53,7 +53,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 42,BUG: pretty_print_table sometimes failing when 0 elements passed,Sadbh,Done,Low,Bug Queue,True
 43,"Update cmds using nargs=""*""",Sadbh,Done,Low,Architecture,True
 44,ls cmd: --copyids option,Sadbh,Not Started,Low,Feature,False
-45,Global -q --quiet command for status msgs and diff outputs,Sadbh,In Progress,Low,Feature,False
+45,Global -q --quiet command for status msgs and diff outputs,Sadbh,Done,Low,Feature,True
 46,Visual indicator for when cmd output is not ls,Sadbh,Done,Low,Architecture,True
 47,Implement different styles using OOP paradigm,Sadbh,Backlog,Low,Architecture,True
 48,constraint cmd: update subcommand,Sadbh,Backlog,Low,Feature,True
