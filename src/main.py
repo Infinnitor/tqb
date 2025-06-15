@@ -13,6 +13,7 @@ def program_args() -> argparse.ArgumentParser:
     root.add_argument("-v", "--version", action="version", version=consts.APP_VERSION_STRING, help="print version")
     root.add_argument("--less", action="store_true", help="use less to display output")
     root.add_argument("-c", "--clear", action="store_true", help="clear terminal before displaying task queue")
+    root.add_argument("-q", "--quiet", action="store_true", help="do not output status messages")
     subcmd = root.add_subparsers(help="subcommands", dest="subcommand")
 
     for cmd_factory in cmds.COMMANDS:
@@ -30,6 +31,7 @@ def main(argv):
 
     parsed = argp.parse_args(argv[1:])
     globals.USE_LESS_FOR_OUTPUT = parsed.less
+    globals.QUIET_OPTION_SET = parsed.quiet
 
     if parsed.clear:
         os.system("clear")

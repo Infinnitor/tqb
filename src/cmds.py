@@ -40,13 +40,10 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
             header_str = ", ".join(consts.DEFAULT_HEADERS)
             msg_before.append(
-                f"creating taskqueue at {args.path} with default headers ({header_str})"
+                f"creating taskqueue at '{args.path}' with default headers ({header_str})"
             )
 
         else:
-            if consts.HEADER_ID_STRING not in headers:
-                headers.insert(0, consts.HEADER_ID_STRING)
-
             tq = TaskQueue.from_headers(headers)
 
             header_str = ", ".join(headers)
@@ -55,6 +52,7 @@ def create(parser: ArgumentParser, root: ArgumentParser):
             )
 
         parsing.serialize(args.path, tq)
+
         util.pretty_print_table(
             [], tq.headers, msg_before=msg_before, msg_after=msg_after
         )
@@ -103,7 +101,11 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
-        headers = args.columns if args.columns else taskq.get_display_headers()
+        headers = (
+            taskq.headers
+            if args.show_all_columns
+            else args.columns if args.columns else taskq.get_display_headers()
+        )
 
         if args.header is True:
             util.pretty_print_table(
@@ -209,6 +211,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
     parser.add_argument(
         "-wo", "--whereor", nargs="+", help="column=value filter clause (one must pass)"
     )
+
     parser.add_argument(
         "-w",
         "--where",
@@ -220,6 +223,12 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
         "--search",
         default=None,
         help="search for value in across all columns",
+    )
+
+    parser.add_argument(
+        "--show-all-columns",
+        action="store_true",
+        help="show all columns, including hidden ones",
     )
 
     parser.add_argument("--ids", action="store_true", help="only output task ids")
@@ -658,10 +667,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
                 tablefmt="rounded_outline",
             )
 
-            if globals.USE_LESS_FOR_OUTPUT:
-                os.system(f'echo "{txt}" | less -SR')
-            else:
-                util.pretty_print_table(table, headers)
+            util.pretty_print_table(table, headers)
 
         sparser.add_argument("columns", nargs="*", help="columns to display")
         sparser.add_argument(

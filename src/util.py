@@ -5,6 +5,7 @@ from colorama import Fore
 import os
 import random
 import consts
+import shutil
 
 
 def get_terminal_size() -> tuple[int, int]:
@@ -123,10 +124,13 @@ def pretty_print_table(
     prettified = truncate_table_width(prettified) + Fore.RESET
     table_visual_width = find_visual_length_of_line(prettified.split("\n")[0])
 
-    for msg in msg_before:
-        print(star_symbol_surround(msg, table_visual_width))
+    final_text = prettified
 
-    print(prettified)
+    if not globals.QUIET_OPTION_SET:
+        final_text = "\n".join(star_symbol_surround(msg, table_visual_width) for msg in msg_before) + "\n" + final_text
+        final_text = final_text + "\n" + "\n".join(star_symbol_surround(msg, table_visual_width) for msg in msg_after)
 
-    for msg in msg_after:
-        print(star_symbol_surround(msg, table_visual_width))
+    if globals.USE_LESS_FOR_OUTPUT:
+        os.system(f"echo \"{final_text}\" | less +gg -SRCQaix4 --tilde")
+    else:
+        print(final_text)

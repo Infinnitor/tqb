@@ -173,6 +173,17 @@ class TaskQueue:
             (c for c in self.constraints.values() if c.__dict__[header] == value), None
         )
 
+    def find_constraint_or_fail(self, header, value=None, msg=None):
+        constraint = self.find_constraint(header, value)
+
+        if msg is None and value is None:
+            msg = f"could not find constraint associated with {header}, make sure it has been added"
+        elif msg is None:
+            msg = f"could not find constraint with {header} set to {value}, make sure it has been set"
+
+        assert constraint is not None, msg
+        return constraint
+
     def find_constraint_fallback(self, header, value=None):
         return self.find_constraint(header, value) or Constraint.empty(header)
 
@@ -186,7 +197,11 @@ class TaskQueue:
         return None
 
     def header_pk(self):
-        return self.find_constraint("Role", "PrimaryKey").HeaderName
+        return self.find_constraint_or_fail(
+            "Role",
+            "PrimaryKey",
+            "could not find PrimaryKey column, create it with 'tqb constraint alter [column] Role=PrimaryKey'",
+        ).HeaderName
 
     def header_desc(self):
         query = self.find_constraint("Role", "Description")
@@ -197,10 +212,18 @@ class TaskQueue:
         )
 
     def header_archive(self):
-        return self.find_constraint("Role", "Archiving").HeaderName
+        return self.find_constraint_or_fail(
+            "Role",
+            "Archiving",
+            "could not find Archiving column, create it with 'tqb constraint alter [column] Role=Archiving'",
+        ).HeaderName
 
     def header_status(self):
-        return self.find_constraint("Role", "Status").HeaderName
+        return self.find_constraint_or_fail(
+            "Role",
+            "Status",
+            "could not find Status column, create it with 'tqb constraint alter [column] Role=Status'",
+        ).HeaderName
 
     def get_display_headers(self) -> list[str]:
         return [h for h in self.headers if not self.find_constraint_fallback(h).Hide]

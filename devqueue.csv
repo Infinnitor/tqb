@@ -27,19 +27,19 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 16,update command on multiple ids,Sadbh,Done,Low,Feature,True
 17,Setup git repo,Sadbh,Done,Low,Management,True
 18,Additional Status variants,Sadbh,Done,Low,Management,True
-19,Add --style option for tabulate,Sadbh,Not Started,Low,Feature,False
+19,Add --style option for tabulate,Sadbh,Backlog,Low,Feature,True
 20,Implement Autofill constraint,Sadbh,Done,High,Feature,True
 21,Migrate all task printing to util.pretty_print_table,Sadbh,Done,Low,Frontend,True
 22,Add decorators to cmds to reduce boilerplate,Sadbh,Done,High,Architecture,True
 23,add cmd: allow adding additional properties,Sadbh,Backlog,Medium,Feature,True
 24,output using pretty_print_table msg_after for all commands,Sadbh,Done,High,Frontend,True
 25,Unknown task that was accidentally overwritten :P,Sadbh,Done,Low,^_^,True
-26,Add --noclr global flag,Sadbh,Not Started,Low,Feature,False
+26,Add --noclr global flag,Sadbh,Backlog,Low,Feature,True
 27,Implement Hide constraint,Sadbh,Done,High,Architecture,True
 28,ls cmd: truncate based on height,Sadbh,Done,Low,Frontend,True
 29,Status messages in pretty_print_table(),Sadbh,Done,Low,Frontend,True
 30,BUG: Account for status msg len discrepancy,Sadbh,Not Started,Low,Bug Queue,False
-31,BUG: Mangled colours on grid borders when maxcolumns is set,Sadbh,Not Started,Low,Bug Queue,False
+31,BUG: Mangled colours on grid borders when maxcolumns is set,Sadbh,Backlog,Low,Bug Queue,True
 32,Create makefile / install script,Sadbh,Backlog,Medium,Management,True
 33,Update strings refering to taskq,Sadbh,Done,Low,Frontend,True
 34,mark cmd: add --archive flag,Sadbh,Done,Low,Feature,True
@@ -47,28 +47,28 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 36,ls cmd: sorting by property,Sadbh,Done,Low,Feature,True
 37,Migrate direct header references to Task.geti,Sadbh,Done,High,Architecture,True
 38,Finish constraint append cmd,Sadbh,Done,High,Feature,True
-39,Add AssertionError handling,Sadbh,Backlog,Low,Architecture,True
+39,Add AssertionError handling,Sadbh,Backlog,Low,Release,True
 40,ls cmd: implement --whereor flag,Sadbh,Done,Low,Feature,True
 41,ls cmd: --ids flag for plain output,Sadbh,Done,Low,Feature,True
 42,BUG: pretty_print_table sometimes failing when 0 elements passed,Sadbh,Done,Low,Bug Queue,True
 43,"Update cmds using nargs=""*""",Sadbh,Done,Low,Architecture,True
 44,ls cmd: --copyids option,Sadbh,Not Started,Low,Feature,False
-45,Global -q --quiet argument for cmd involving marking,Sadbh,Not Started,Low,Feature,False
+45,Global -q --quiet command for status msgs and diff outputs,Sadbh,In Progress,Low,Feature,False
 46,Visual indicator for when cmd output is not ls,Sadbh,Done,Low,Architecture,True
 47,Implement different styles using OOP paradigm,Sadbh,Backlog,Low,Architecture,True
 48,constraint cmd: update subcommand,Sadbh,Backlog,Low,Feature,True
 49,BUG: Status appears as done when outputting update result table,Sadbh,Cancelled,Medium,Bug Queue,True
 50,BUG: update cmd: allows invalid column to be set,Sadbh,Done,Low,Bug Queue,True
 51,BUG: Corners of table are sometimes the wrong colour,Sadbh,Done,Low,Bug Queue,True
-52,Support hex colours in Colours constraint,Sadbh,Not Started,Low,Architecture,False
-53,help cmd: add coloured output with logo,Sadbh,Not Started,Low,Frontend,False
+52,Support hex colours in Colours constraint,Sadbh,Backlog,Low,Architecture,True
+53,help cmd: add coloured output with logo,Sadbh,Done,Low,Frontend,True
 54,pretty_print_table: variants of indent symbols for different cmds,Sadbh,Done,High,Frontend,True
 55,blueprint cmd: test creation of new queue,Sadbh,Done,Low,Testing,True
 56,create TaskQueue.smart_header_match and Task.get,Sadbh,Done,High,Architecture,True
-57,Account for failure case in TaskQueue.header_* methods,Sadbh,Not Started,High,Architecture,False
-58,show cmd: create command for displaying single task,Sadbh,Not Started,Low,Feature,False
+57,Account for failure case in TaskQueue.header_* methods,Sadbh,Done,High,Architecture,True
+58,show cmd: create command for displaying single task,Sadbh,Not Started,Medium,Feature,False
 59,migrate Task.update_column to smart system,Sadbh,Done,Medium,Architecture,True
-60,Global --less flag,Sadbh,In Progress,Low,Feature,False
+60,Global --less flag,Sadbh,Done,Low,Feature,True
 61,Create colours.py module,Sadbh,Done,High,Architecture,True
 62,Implement AutoHeader constraint,Sadbh,Backlog,High,Architecture,True
 63,Autofilling names for AutoHeader columns,Sadbh,Backlog,High,Feature,True
@@ -89,3 +89,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 78,BUG: column rename cmd does not update constraint name,Sadbh,Done,Low,Bug Queue,True
 79,alias cmd: create aliases for long cmds,Sadbh,Backlog,Low,,True
 80,Update parsing.deserialize to be more error tolerant,Sadbh,Done,Low,Architecture,True
+81,BUG: Some characters offset or missing with --less,Sadbh,Not Started,Low,Bug Queue,False
+82,TaskQueue config architecture and parsing,Sadbh,Not Started,Low,Architecture,False
+83,"config{ls,set,get} cmd",Sadbh,Dependant,Low,Architecture,False
+84,ls cmd: --show-all-columns option,Sadbh,Done,High,,True
