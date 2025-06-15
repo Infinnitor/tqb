@@ -6,7 +6,7 @@ DEFAULT_HEADERS = ("Id", "Task", "Assignee", "Status", "Priority", "Archived")
 DEFAULT_SUBCOMMAND = "help"
 
 CONSTRAINTS_BEGIN = "# BEGIN CONSTRAINTS"
-CONSTRAINTS_HEADERS = ("HeaderName", "ConstrainType", "ConstrainVariant", "Default", "ColWidth", "Colours", "Role", "Autofill")
+CONSTRAINTS_HEADERS = ("HeaderName", "ConstrainType", "ConstrainVariant", "Default", "ColWidth", "Colours", "Role", "Autofill", "Hide")
 CONSTRAINTS_END = "# END CONSTRAINTS"
 CONSTRAINT_ROLES = ("Status", "PrimaryKey", "Archiving", "Description")
 

@@ -9,7 +9,7 @@ import os
 
 def program_args() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog=consts.APP_NAME)
-    root.add_argument("--path", nargs="?", default=consts.DEFAULT_PATH, help="path to task queue file")
+    root.add_argument("-p", "--path", nargs="?", default=consts.DEFAULT_PATH, help="path to task queue file")
     root.add_argument("--less", action="store_true", help="use less to display output")
     root.add_argument("--clear", action="store_true", help="clear terminal before displaying task queue")
     subcmd = root.add_subparsers(help="subcommands", dest="subcommand")

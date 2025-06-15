@@ -13,6 +13,7 @@ from colorama import Fore
 import util
 import fnmatch
 import itertools
+import colours
 
 
 def create(parser: ArgumentParser, root: ArgumentParser):
@@ -92,7 +93,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
 
     def inner(args: Namespace):
         taskq = parsing.deserialize(args.path)
-        headers = args.columns if args.columns else taskq.headers
+        headers = args.columns if args.columns else taskq.get_display_headers()
 
         if args.header is True:
             util.pretty_print_table(
@@ -215,7 +216,7 @@ def add(parser: ArgumentParser, root: ArgumentParser):
             [new_task.to_display_row()],
             taskq.headers,
             msg_after=["added task to queue :3"],
-            indent_table=True,
+            indent_table=colours.Indents.ADD,
         )
         parsing.serialize(args.path, taskq)
 
@@ -267,7 +268,7 @@ def update(parser: ArgumentParser, root: ArgumentParser):
             msg_after=[
                 f"updated id{'s' if len(args.ids) > 1 else ''} {', '.join(map(str, args.ids))}"
             ],
-            indent_table=True,
+            indent_table=colours.Indents.UPDATE,
         )
         parsing.serialize(args.path, taskq)
 
@@ -298,7 +299,7 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
             table,
             taskq.headers,
             msg_after=[f"removed {tlen} task{plural} with id{plural} {ids_string}"],
-            indent_table=True,
+            indent_table=colours.Indents.REMOVE,
         )
 
         parsing.serialize(args.path, taskq)
@@ -332,7 +333,7 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
             msg_after=[
                 f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {args.value}!"
             ],
-            indent_table=True,
+            indent_table=colours.Indents.UPDATE,
         )
         parsing.serialize(args.path, taskq)
 
@@ -365,7 +366,7 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
             msg_after=[
                 f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} archived :o"
             ],
-            indent_table=True,
+            indent_table=colours.Indents.ARCHIVE if args.undo else colours.Indents.ARCHIVE_UNDO,
         )
         parsing.serialize(args.path, taskq)
 

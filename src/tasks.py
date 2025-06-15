@@ -76,7 +76,7 @@ class Task:
         return cls(zipped.get(queue.header_pk()), zipped, queue)
 
     def to_display_row(self, headers=None):
-        headers = self.queue.headers if headers is None else headers
+        headers = self.queue.get_display_headers() if headers is None else headers
         row = []
         for k in headers:
             constraint = self.queue.constraints[k]
@@ -196,6 +196,9 @@ class TaskQueue:
 
     def header_status(self):
         return self.find_constraint("Role", "Status").HeaderName
+
+    def get_display_headers(self) -> list[str]:
+        return [h for h in self.headers if not self.constraints[h].Hide]
 
     def get_constraints_sorted_by_headers(self, headers=None):
         headers = headers or self.headers

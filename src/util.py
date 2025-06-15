@@ -29,7 +29,15 @@ def star_symbol_surround(msg, width):
     padding = (width - len(msg)) // 4 + 1
     msg = f"{Fore.CYAN}{msg}{Fore.RESET}"
 
-    return stars(padding) + msg + stars(padding)
+    fmt = stars(padding) + msg + stars(padding)
+    return fmt
+
+
+def find_visual_length_of_line(line):
+    line_without_colours = functools.reduce(
+        lambda acc, r: acc.replace(r, ""), Fore.__dict__.values(), line
+    )
+    return len(line_without_colours)
 
 
 def pretty_print_table(
@@ -39,13 +47,8 @@ def pretty_print_table(
     style=None,
     msg_before=[],
     msg_after=[],
-    indent_table=False,
+    indent_table="",
 ):
-    def find_visual_length_of_line(line):
-        line_without_colours = functools.reduce(
-            lambda acc, r: acc.replace(r, ""), Fore.__dict__.values(), line
-        )
-        return len(line_without_colours)
 
     def truncate_table_width(text):
         lines = text.split("\n")
@@ -111,7 +114,10 @@ def pretty_print_table(
 
     prettified = style_txt_process(txt)
     if indent_table:
-        lines = [f"{clr_surround_fore('==>', Fore.RED)} {line}" for line in prettified.split("\n")]
+        lines = [
+            f"{indent_table} {line}"
+            for line in prettified.split("\n")
+        ]
         prettified = "\n".join(lines)
 
     prettified = truncate_table_width(prettified) + Fore.RESET

@@ -1,12 +1,12 @@
 # BEGIN CONSTRAINTS
-HeaderName,ConstrainType,ConstrainVariant,Default,ColWidth,Colours,Role,Autofill
-Id,int,,,,*=BLUE,PrimaryKey,False
-Archived,bool,True|False,False,,False=RED|True=GREY,Archiving,False
-Priority,,High|Medium|Low|Critical,Low,,high=RED|medium=YELLOW|low=BLUE|critical=MAGENTA,,True
-Status,,Not Started|In Progress|Done|Dependant|Backlog|Cancelled,Not Started,,not started=GREY|in progress=YELLOW|done=GREEN|Dependant=MAGENTA|Backlog=CYAN|Cancelled=BLUE,Status,True
-Task,,,,55,BUG:*=RED,Description,False
-Assignee,,,Sadbh,,,,False
-Project,,,,,,,False
+HeaderName,ConstrainType,ConstrainVariant,Default,ColWidth,Colours,Role,Autofill,Hide
+Id,int,,,,*=BLUE,PrimaryKey,False,False
+Archived,bool,True|False,False,,False=RED|True=GREY,Archiving,False,True
+Priority,,High|Medium|Low|Critical,Low,,high=RED|medium=YELLOW|low=BLUE|critical=MAGENTA,,True,False
+Status,,Not Started|In Progress|Done|Dependant|Backlog|Cancelled,Not Started,,not started=GREY|in progress=YELLOW|done=GREEN|Dependant=MAGENTA|Backlog=CYAN|Cancelled=BLUE,Status,True,False
+Task,,,,55,BUG:*=RED,Description,False,False
+Assignee,,,Sadbh,,,,False,False
+Project,,,,,,,False,False
 # END CONSTRAINTS
 Id,Task,Assignee,Status,Priority,Project,Archived
 1,Add Status role get function on TaskQueue,Sadbh,Done,High,,True
@@ -35,7 +35,7 @@ Id,Task,Assignee,Status,Priority,Project,Archived
 24,output using pretty_print_table msg_after for all commands,Sadbh,Done,High,,True
 25,Unknown task that was accidentally overwritten :P,Sadbh,Done,Low,,True
 26,Add --noclr global flag,Sadbh,Not Started,Low,,False
-27,Implement Hide constraint,Sadbh,In Progress,High,,False
+27,Implement Hide constraint,Sadbh,Done,High,,True
 28,ls cmd: truncate based on height,Sadbh,Done,Low,,True
 29,Status messages in pretty_print_table(),Sadbh,Done,Low,,True
 30,BUG: Account for status msg len discrepancy,Sadbh,Not Started,Low,Bug Queue,False
@@ -62,14 +62,14 @@ Id,Task,Assignee,Status,Priority,Project,Archived
 51,BUG: Corners of table are sometimes the wrong colour,Sadbh,Done,Low,Bug Queue,True
 52,Support hex colours in Colours constraint,Sadbh,Not Started,Low,,False
 53,help cmd: add coloured output with logo,Sadbh,Not Started,Low,,False
-54,pretty_print_table: variants of indent symbols for different cmds,Sadbh,Dependant,High,,False
+54,pretty_print_table: variants of indent symbols for different cmds,Sadbh,Done,High,,True
 55,blueprint cmd: test creation of new queue,Sadbh,Done,Low,,True
 56,create TaskQueue.smart_header_match and Task.get,Sadbh,Done,High,,True
 57,Account for failure case in TaskQueue.header_* methods,Sadbh,Not Started,High,,False
 58,show cmd: create command for displaying single task,Sadbh,Not Started,Low,,False
 59,migrate Task.update_column to smart system,Sadbh,Not Started,Medium,,False
 60,Global --less flag,Sadbh,Not Started,Low,,False
-61,Create colours.py module,Sadbh,Not Started,High,,False
+61,Create colours.py module,Sadbh,In Progress,High,,False
 62,Implement AutoHeader constraint,Sadbh,Not Started,High,,False
 63,Autofilling names for AutoHeader columns,Sadbh,Dependant,High,,False
 64,Add --clear flag,Sadbh,Done,Low,,True
@@ -80,3 +80,5 @@ Id,Task,Assignee,Status,Priority,Project,Archived
 69,Remove TaskQueue.constraints key indexing,Sadbh,Not Started,Low,,False
 70,Bug test column cmd,Sadbh,Not Started,Low,Testing,False
 71,column cmd: output on subcommand success,Sadbh,Done,Low,,True
+72,Scope creation of automated testing system with pytest,Sadbh,Not Started,Low,,False
+73,Update all cmds to respect Hide constraint,Sadbh,Done,Low,,True

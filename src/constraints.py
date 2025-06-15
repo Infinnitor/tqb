@@ -21,6 +21,7 @@ class Constraint:
     Colours: str
     Role: str
     Autofill: bool
+    Hide: bool
 
     @classmethod
     def empty(cls, header_name: str):
@@ -48,6 +49,7 @@ class Constraint:
             row[4] = int(row[4])
 
         row[7] = CONSTRAINT_MAP["bool"](row[7])
+        row[8] = CONSTRAINT_MAP["bool"](row[8])
 
         return cls(*row)
 
