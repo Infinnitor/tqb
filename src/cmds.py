@@ -2,24 +2,39 @@ from argparse import Namespace, ArgumentParser
 import csv
 import consts
 import parsing
-from parsing import TaskQueue, Task, Constraint
-from pprint import pprint
+from tasks import Task, TaskQueue
+from constraints import Constraint
 from tabulate import tabulate
 import random
 import os
 import globals
-import colorama
 from colorama import Fore
 import util
 import fnmatch
 import itertools
 import colours
 from typing import Callable
+from config import Config, ConfigPair
+import shlex
+import pyperclip
 
 
 def tqb_serialize(func: Callable):
     def inner(args: Namespace):
         taskq = parsing.deserialize(args.path)
+        globals.USE_LESS_FOR_OUTPUT = args.less
+        globals.QUIET_OPTION_SET = (
+            next(
+                (
+                    c
+                    for c in taskq.config.get_all("GlobalQuiet")
+                    if c.Value not in ("", "False", "0")
+                ),
+                False,
+            )
+            or args.quiet
+        )
+
         func(taskq, args)
         parsing.serialize(args.path, taskq)
 
@@ -124,6 +139,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
 
             table = []
             tasks_list = taskq.tasks
+            ids_list = []
 
             if args.sort is not None:
                 assert (
@@ -168,10 +184,11 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
                     ):
                         continue
 
-                if args.ids:
-                    table.append(str(task.geti(taskq.header_pk())))
-                else:
-                    table.append(task.to_display_row(headers))
+                table.append(task.to_display_row(headers))
+                ids_list.append(str(task.id))
+
+            if args.copyids:
+                pyperclip.copy(" ".join(ids_list))
 
             if not args.ids:
                 col_widths = taskq.get_column_widths()
@@ -192,7 +209,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
                     msg_after=message_after,
                 )
             else:
-                print(" ".join(table))
+                print(" ".join(ids_list))
 
     parser.add_argument("columns", nargs="*", help="columns to display")
     parser.add_argument("--header", action="store_true", help="just display the header")
@@ -233,6 +250,9 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
     )
 
     parser.add_argument("--ids", action="store_true", help="only output task ids")
+    parser.add_argument(
+        "--copyids", action="store_true", help="copy ids of tasks to clipboard"
+    )
 
     return inner
 
@@ -258,15 +278,19 @@ def add(parser: ArgumentParser, root: ArgumentParser):
     return inner
 
 
-def find(parser: ArgumentParser, root: ArgumentParser):
+def show(parser: ArgumentParser, root: ArgumentParser):
     """Find a task by id and display it"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
         task = taskq.find_or_fail(args.id)
+        table = []
+        for header, value in task.items.items():
+            coloured_value = taskq.find_constraint_fallback(header).apply_colour(value)
+            table.append([util.clr_surround_fore(header, Fore.GREEN), coloured_value])
+
         util.pretty_print_table(
-            [task.to_display_row()],
-            taskq.get_display_headers(),
+            table,
             msg_before=[f"entry for task with id {args.id}"],
         )
 
@@ -325,7 +349,6 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
         tlen = len(table)
         plural = "s" if tlen > 1 else ""
         ids_string = " ".join(map(str, args.ids))
-
 
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
@@ -404,12 +427,71 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
                     f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} archived :o"
                 ],
                 indent_table=(
-                    colours.Indents.ARCHIVE if args.undo else colours.Indents.ARCHIVE_UNDO
+                    colours.Indents.ARCHIVE
+                    if args.undo
+                    else colours.Indents.ARCHIVE_UNDO
                 ),
             )
 
     parser.add_argument("ids", nargs="+", type=int, help="ids of task to archive")
     parser.add_argument("-u", "--undo", action="store_false", help="undo archive")
+
+    return inner
+
+
+def alias(parser: ArgumentParser, root: ArgumentParser):
+    """Use an alias defined with config"""
+
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
+        alias = next(
+            (
+                a
+                for a in taskq.config.get_all(consts.CONFIG_ALIAS_NAMESPACE)
+                if a.Value == args.name
+            ),
+            None,
+        )
+        assert alias, f"could not find alias with name '{args.name}'"
+        assert alias.Opt, "could not run alias, is empty"
+
+        cmd_txt = alias.Opt
+        for idx, arg in enumerate(args.arguments):
+            replace_str = f"${idx}"
+            if arg.startswith("-"):
+                cmd_txt += f" {arg} "
+            elif replace_str in cmd_txt:
+                cmd_txt = cmd_txt.replace(replace_str, arg)
+            else:
+                cmd_txt += f" {arg} "
+
+        run_args = shlex.split(cmd_txt)
+        print(run_args)
+        parsed = root.parse_args(run_args)
+        if hasattr(parsed, "func"):
+            assert (
+                parsed.func.__name__ != "alias"
+            ), "do NOT recursively run alias commands lol"
+
+        globals.USE_LESS_FOR_OUTPUT = parsed.less
+        globals.QUIET_OPTION_SET = parsed.quiet
+
+        if parsed.clear:
+            os.system("clear")
+
+        if parsed.help:
+            parsed = root.parse_args(run_args + ["help"])
+            parsed.func(parsed)
+        elif hasattr(parsed, "func"):
+            parsed.func(parsed)
+        else:
+            parsed = root.parse_args(run_args + [consts.DEFAULT_SUBCOMMAND])
+            parsed.func(parsed)
+
+    parser.add_argument("name", help="name of the alias to use")
+    parser.add_argument(
+        "arguments", nargs="*", help="additional arguments to pass to the alias"
+    )
 
     return inner
 
@@ -448,7 +530,6 @@ def column(parser: ArgumentParser, root: ArgumentParser):
                 task.items[target] = ""
 
             taskq.constraints[target] = Constraint.empty(target)
-
 
             if not globals.QUIET_OPTION_SET:
                 print(
@@ -550,6 +631,81 @@ def column(parser: ArgumentParser, root: ArgumentParser):
     subcmd = parser.add_subparsers(required=True, help="constraint subcommands")
 
     for cmd_factory in [add, move, rename, remove]:
+        parser = subcmd.add_parser(cmd_factory.__name__, help=cmd_factory.__doc__)
+        func = cmd_factory(parser)
+        parser.set_defaults(func=func)
+
+
+def config(parser: ArgumentParser, root: ArgumentParser):
+    """Subcommand for working with aliases"""
+
+    def ls(sparser: ArgumentParser):
+        """List config entries"""
+
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
+            headers = consts.CONFIG_HEADERS
+
+            util.pretty_print_table(
+                [cfg.serialize() for cfg in taskq.config.configs],
+                headers,
+                msg_before=["config values"],
+                msg_after=[f"{len(taskq.config.configs)} entries"],
+            )
+
+        return inner
+
+    def add(sparser: ArgumentParser):
+        """Add config entry"""
+
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
+            cfg = ConfigPair(args.key, args.value, args.opt)
+            for pair in taskq.config.get_all(cfg.Key):
+                assert (
+                    cfg.Value != pair.Value
+                ), f"duplicate key found for {cfg}, cannot insert"
+
+            taskq.config.add_config_pair(cfg)
+
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        "config added", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
+                )
+
+        sparser.add_argument("key", help="key")
+        sparser.add_argument("value", help="value")
+        sparser.add_argument("opt", nargs="?", default="", help="additional options")
+
+        return inner
+
+    def remove(sparser: ArgumentParser):
+        """Add config entry"""
+
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
+            for idx, cfg in enumerate(taskq.config.configs):
+                if cfg.Key == args.key and cfg.Value == args.value:
+                    taskq.config.configs.pop(idx)
+                    break
+
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        "config removed", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
+                )
+
+        sparser.add_argument("key", help="namespace of config")
+        sparser.add_argument("value", help="value of config")
+
+        return inner
+
+    subcmd = parser.add_subparsers(required=True, help="config subcommands")
+
+    for cmd_factory in [ls, add, remove]:
         parser = subcmd.add_parser(cmd_factory.__name__, help=cmd_factory.__doc__)
         func = cmd_factory(parser)
         parser.set_defaults(func=func)
@@ -700,11 +856,13 @@ COMMANDS = [
     add,
     update,
     mark,
-    find,
+    show,
     archive,
     remove,
     column,
     constraint,
+    alias,
+    config,
     blueprint,
     help,
 ]

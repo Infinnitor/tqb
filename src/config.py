@@ -39,7 +39,7 @@ class Config:
         return next((pair for pair in self.configs if pair.Key == key), None)
 
     def get_all(self, key) -> list[ConfigPair]:
-        return next(pair for pair in self.configs if pair.Key == key)
+        return [pair for pair in self.configs if pair.Key == key]
 
     def get_and_apply(self, key, func):
         q = self.get(key)

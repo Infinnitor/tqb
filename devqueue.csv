@@ -1,5 +1,7 @@
 # BEGIN CONFIG
 Key,Value,Opt
+Alias,lshp,--path devqueue.csv ls --where Priority=High
+Alias,lsbck,--path devqueue.csv ls --all --where Status=Backlog
 # END CONFIG
 # BEGIN CONSTRAINTS
 HeaderName,ConstrainType,ConstrainVariant,Default,ColWidth,Colours,Role,Autofill,Hide
@@ -41,7 +43,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 27,Implement Hide constraint,Sadbh,Done,High,Architecture,True
 28,ls cmd: truncate based on height,Sadbh,Done,Low,Frontend,True
 29,Status messages in pretty_print_table(),Sadbh,Done,Low,Frontend,True
-30,BUG: Account for status msg len discrepancy,Sadbh,Not Started,Low,Bug Queue,False
+30,BUG: Account for status msg len discrepancy,Sadbh,Backlog,Low,Bug Queue,True
 31,BUG: Mangled colours on grid borders when maxcolumns is set,Sadbh,Backlog,Low,Bug Queue,True
 32,Create makefile / install script,Sadbh,Backlog,Medium,Management,True
 33,Update strings refering to taskq,Sadbh,Done,Low,Frontend,True
@@ -55,7 +57,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 41,ls cmd: --ids flag for plain output,Sadbh,Done,Low,Feature,True
 42,BUG: pretty_print_table sometimes failing when 0 elements passed,Sadbh,Done,Low,Bug Queue,True
 43,"Update cmds using nargs=""*""",Sadbh,Done,Low,Architecture,True
-44,ls cmd: --copyids option,Sadbh,Not Started,Low,Feature,False
+44,ls cmd: --copyids option,Sadbh,Done,Low,Feature,True
 45,Global -q --quiet command for status msgs and diff outputs,Sadbh,Done,Low,Feature,True
 46,Visual indicator for when cmd output is not ls,Sadbh,Done,Low,Architecture,True
 47,Implement different styles using OOP paradigm,Sadbh,Backlog,Low,Architecture,True
@@ -69,7 +71,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 55,blueprint cmd: test creation of new queue,Sadbh,Done,Low,Testing,True
 56,create TaskQueue.smart_header_match and Task.get,Sadbh,Done,High,Architecture,True
 57,Account for failure case in TaskQueue.header_* methods,Sadbh,Done,High,Architecture,True
-58,show cmd: create command for displaying single task,Sadbh,Not Started,Medium,Feature,False
+58,show cmd: create command for displaying single task,Sadbh,Done,Medium,Feature,True
 59,migrate Task.update_column to smart system,Sadbh,Done,Medium,Architecture,True
 60,Global --less flag,Sadbh,Done,Low,Feature,True
 61,Create colours.py module,Sadbh,Done,High,Architecture,True
@@ -90,13 +92,15 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 76,Create colours.Indents enum,Sadbh,Done,Low,Frontend,True
 77,Review all tasks and assign projects,Sadbh,Done,Low,Management,True
 78,BUG: column rename cmd does not update constraint name,Sadbh,Done,Low,Bug Queue,True
-79,alias cmd: create aliases for long cmds,Sadbh,Not Started,Low,Feature,False
+79,alias cmd: create aliases for long cmds,Sadbh,Done,Low,Feature,True
 80,Update parsing.deserialize to be more error tolerant,Sadbh,Done,Low,Architecture,True
-81,BUG: Some characters offset or missing with --less,Sadbh,Not Started,Low,Bug Queue,False
-82,TaskQueue config architecture and parsing,Sadbh,Done,High,Architecture,False
-83,"config{ls,set,get} cmd",Sadbh,In Progress,High,Architecture,False
+81,BUG: Some characters offset or missing with --less,Sadbh,Backlog,Low,Bug Queue,True
+82,TaskQueue config architecture and parsing,Sadbh,Done,High,Architecture,True
+83,"config{ls,add,remove} cmd",Sadbh,Done,High,Architecture,True
 84,ls cmd: --show-all-columns option,Sadbh,Done,High,Feature,True
 85,BUG: TaskQueue.get_column_widths does not respect Hide constraint,Sadbh,Done,Low,Bug Queue,True
 86,help cmd: override --help flag,Sadbh,Done,Low,Feature,True
 87,--less flag: Use shutil.which('less') to check availability,Sadbh,Done,Low,Architecture,True
 88,"BUG: incorrect headers displaying for {mark,update}",Sadbh,Done,High,Bug Queue,True
+89,config cmd: prevent duplicate rows,Sadbh,Done,Low,Architecture,True
+90,default case for an empty task queue,Sadbh,Not Started,Low,,False
