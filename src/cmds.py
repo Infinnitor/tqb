@@ -456,7 +456,6 @@ def alias(parser: ArgumentParser, root: ArgumentParser):
                 cmd_txt += f" {arg} "
 
         run_args = shlex.split(cmd_txt)
-        print(run_args)
         parsed = root.parse_args(run_args)
         if hasattr(parsed, "func"):
             assert (

@@ -36,7 +36,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 20,Implement Autofill constraint,Sadbh,Done,High,Feature,True
 21,Migrate all task printing to util.pretty_print_table,Sadbh,Done,Low,Frontend,True
 22,Add decorators to cmds to reduce boilerplate,Sadbh,Done,High,Architecture,True
-23,add cmd: allow adding additional properties,Sadbh,Backlog,Medium,Feature,True
+23,add cmd: allow adding additional properties,Sadbh,Not Started,Medium,Feature,False
 24,output using pretty_print_table msg_after for all commands,Sadbh,Done,High,Frontend,True
 25,Unknown task that was accidentally overwritten :P,Sadbh,Done,Low,^_^,True
 26,Add --noclr global flag,Sadbh,Backlog,Low,Feature,True
@@ -45,14 +45,14 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 29,Status messages in pretty_print_table(),Sadbh,Done,Low,Frontend,True
 30,BUG: Account for status msg len discrepancy,Sadbh,Backlog,Low,Bug Queue,True
 31,BUG: Mangled colours on grid borders when maxcolumns is set,Sadbh,Backlog,Low,Bug Queue,True
-32,Create makefile / install script,Sadbh,Backlog,Medium,Management,True
+32,Create makefile / install script,Sadbh,Not Started,Medium,Release,False
 33,Update strings refering to taskq,Sadbh,Done,Low,Frontend,True
 34,mark cmd: add --archive flag,Sadbh,Done,Low,Feature,True
 35,Add ^_^,Sadbh,Done,Low,^_^,True
 36,ls cmd: sorting by property,Sadbh,Done,Low,Feature,True
 37,Migrate direct header references to Task.geti,Sadbh,Done,High,Architecture,True
 38,Finish constraint append cmd,Sadbh,Done,High,Feature,True
-39,Add AssertionError handling,Sadbh,Backlog,Low,Release,True
+39,Add AssertionError handling,Sadbh,Not Started,High,Release,False
 40,ls cmd: implement --whereor flag,Sadbh,Done,Low,Feature,True
 41,ls cmd: --ids flag for plain output,Sadbh,Done,Low,Feature,True
 42,BUG: pretty_print_table sometimes failing when 0 elements passed,Sadbh,Done,Low,Bug Queue,True
@@ -65,7 +65,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 49,BUG: Status appears as done when outputting update result table,Sadbh,Cancelled,Medium,Bug Queue,True
 50,BUG: update cmd: allows invalid column to be set,Sadbh,Done,Low,Bug Queue,True
 51,BUG: Corners of table are sometimes the wrong colour,Sadbh,Done,Low,Bug Queue,True
-52,Support hex colours in Colours constraint,Sadbh,Backlog,Low,Architecture,True
+52,Support hex colours in Colours constraint,Sadbh,Not Started,High,Architecture,False
 53,help cmd: add coloured output with logo,Sadbh,Done,Low,Frontend,True
 54,pretty_print_table: variants of indent symbols for different cmds,Sadbh,Done,High,Frontend,True
 55,blueprint cmd: test creation of new queue,Sadbh,Done,Low,Testing,True
@@ -85,9 +85,9 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 69,Remove TaskQueue.constraints key indexing,Sadbh,Done,High,Architecture,True
 70,Bug test column cmd,Sadbh,Backlog,Low,Testing,True
 71,column cmd: output on subcommand success,Sadbh,Done,Low,Feature,True
-72,Scope creation of automated testing system with pytest,Sadbh,Backlog,Low,Testing,True
+72,Scope creation of automated testing system with pytest,Sadbh,Not Started,Low,Testing,False
 73,Update all cmds to respect Hide constraint,Sadbh,Done,Low,Architecture,True
-74,Type hint all functions,Sadbh,Backlog,Low,Release,True
+74,Type hint all functions,Sadbh,Not Started,Medium,Release,False
 75,ls cmd: --search flag,Sadbh,Done,Low,Feature,True
 76,Create colours.Indents enum,Sadbh,Done,Low,Frontend,True
 77,Review all tasks and assign projects,Sadbh,Done,Low,Management,True
@@ -103,6 +103,7 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 87,--less flag: Use shutil.which('less') to check availability,Sadbh,Done,Low,Architecture,True
 88,"BUG: incorrect headers displaying for {mark,update}",Sadbh,Done,High,Bug Queue,True
 89,config cmd: prevent duplicate rows,Sadbh,Done,Low,Architecture,True
-90,default case for an empty task queue,Sadbh,Cancelled,Low,Architecture,False
+90,default case for an empty task queue,Sadbh,Not Started,Medium,Architecture,False
 91,config: DefaultPath option,Sadbh,Cancelled,Low,Architecture,True
 92,Scope colorama.init() for windows compat,Sadbh,Done,Low,Architecture,True
+93,ls cmd: migrate --sort to smart headers,Sadbh,Not Started,Low,Architecture,False
