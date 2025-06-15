@@ -230,13 +230,21 @@ class TaskQueue:
 
     def get_constraints_sorted_by_headers(self, headers=None):
         headers = headers or self.headers
+        filtered_constraints = [
+            c for c in self.constraints.values() if c.HeaderName in headers
+        ]
         csorted = sorted(
-            self.constraints.values(), key=lambda x: headers.index(x.HeaderName)
+            filtered_constraints, key=lambda x: headers.index(x.HeaderName)
         )
         return csorted
 
-    def get_column_widths(self):
-        return [c.ColWidth or None for c in self.get_constraints_sorted_by_headers()]
+    def get_column_widths(self, headers=None):
+        return [
+            c.ColWidth or None
+            for c in self.get_constraints_sorted_by_headers(
+                headers=headers or self.get_display_headers()
+            )
+        ]
 
     def smart_header_match(self, name: str):
         for header in self.headers:

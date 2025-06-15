@@ -248,7 +248,7 @@ def add(parser: ArgumentParser, root: ArgumentParser):
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
                 [new_task.to_display_row()],
-                taskq.headers,
+                taskq.get_display_headers(),
                 msg_after=["added task to queue :3"],
                 indent_table=colours.Indents.ADD,
             )
@@ -266,7 +266,7 @@ def find(parser: ArgumentParser, root: ArgumentParser):
         task = taskq.find_or_fail(args.id)
         util.pretty_print_table(
             [task.to_display_row()],
-            taskq.headers,
+            taskq.get_display_headers(),
             msg_before=[f"entry for task with id {args.id}"],
         )
 
@@ -296,7 +296,7 @@ def update(parser: ArgumentParser, root: ArgumentParser):
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
                 table,
-                taskq.headers,
+                taskq.get_display_headers(),
                 msg_after=[
                     f"updated id{'s' if len(args.ids) > 1 else ''} {', '.join(map(str, args.ids))}"
                 ],
@@ -330,7 +330,7 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
                 table,
-                taskq.headers,
+                taskq.get_display_headers(),
                 msg_after=[f"removed {tlen} task{plural} with id{plural} {ids_string}"],
                 indent_table=colours.Indents.REMOVE,
             )
@@ -363,7 +363,7 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
                 table,
-                taskq.headers,
+                taskq.get_display_headers(),
                 msg_after=[
                     f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {constrained_value}!"
                 ],
@@ -399,7 +399,7 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
                 table,
-                taskq.headers,
+                taskq.get_display_headers(),
                 msg_after=[
                     f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} archived :o"
                 ],

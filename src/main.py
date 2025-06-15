@@ -8,12 +8,13 @@ import os
 
 
 def program_args() -> argparse.ArgumentParser:
-    root = argparse.ArgumentParser(prog=consts.APP_NAME)
+    root = argparse.ArgumentParser(prog=consts.APP_NAME, add_help=False)
+    root.add_argument("-h", "--help", action="store_true", help="show the help message")
     root.add_argument("--path", nargs="?", default=consts.DEFAULT_PATH, help="path to task queue file")
     root.add_argument("-v", "--version", action="version", version=consts.APP_VERSION_STRING, help="print version")
-    root.add_argument("--less", action="store_true", help="use less to display output")
     root.add_argument("-c", "--clear", action="store_true", help="clear terminal before displaying task queue")
     root.add_argument("-q", "--quiet", action="store_true", help="do not output status messages")
+    root.add_argument("--less", action="store_true", help="use 'less' to display output")
     subcmd = root.add_subparsers(help="subcommands", dest="subcommand")
 
     for cmd_factory in cmds.COMMANDS:
@@ -36,7 +37,10 @@ def main(argv):
     if parsed.clear:
         os.system("clear")
 
-    if hasattr(parsed, "func"):
+    if parsed.help:
+        parsed = argp.parse_args(argv[1:] + ["help"])
+        parsed.func(parsed)
+    elif hasattr(parsed, "func"):
         parsed.func(parsed)
     else:
         parsed = argp.parse_args(argv[1:] + [consts.DEFAULT_SUBCOMMAND])

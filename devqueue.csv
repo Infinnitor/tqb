@@ -5,7 +5,7 @@ Archived,bool,True|False,False,,False=RED|True=GREY,Archiving,False,True
 Priority,,High|Medium|Low|Critical,Low,8,high=RED|medium=YELLOW|low=BLUE|critical=MAGENTA,,True,False
 Status,,Not Started|In Progress|Done|Dependant|Backlog|Cancelled,Not Started,,not started=GREY|in progress=YELLOW|done=GREEN|Dependant=MAGENTA|Backlog=CYAN|Cancelled=BLUE,Status,True,False
 Task,,,,75,BUG:*=RED,Description,False,False
-Assignee,,,Sadbh,,,,False,False
+Assignee,,,Sadbh,,,,False,True
 Area,,Architecture|Frontend|Feature|Bug Queue|Design|Management|Testing|^_^|Release,,,,,True,False
 # END CONSTRAINTS
 Id,Task,Assignee,Status,Priority,Area,Archived
@@ -87,9 +87,13 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 76,Create colours.Indents enum,Sadbh,Done,Low,Frontend,True
 77,Review all tasks and assign projects,Sadbh,Done,Low,Management,True
 78,BUG: column rename cmd does not update constraint name,Sadbh,Done,Low,Bug Queue,True
-79,alias cmd: create aliases for long cmds,Sadbh,Backlog,Low,,True
+79,alias cmd: create aliases for long cmds,Sadbh,Backlog,Low,Feature,True
 80,Update parsing.deserialize to be more error tolerant,Sadbh,Done,Low,Architecture,True
 81,BUG: Some characters offset or missing with --less,Sadbh,Not Started,Low,Bug Queue,False
-82,TaskQueue config architecture and parsing,Sadbh,Not Started,Low,Architecture,False
-83,"config{ls,set,get} cmd",Sadbh,Dependant,Low,Architecture,False
-84,ls cmd: --show-all-columns option,Sadbh,Done,High,,True
+82,TaskQueue config architecture and parsing,Sadbh,Backlog,High,Architecture,True
+83,"config{ls,set,get} cmd",Sadbh,Dependant,High,Architecture,False
+84,ls cmd: --show-all-columns option,Sadbh,Done,High,Feature,True
+85,BUG: TaskQueue.get_column_widths does not respect Hide constraint,Sadbh,Done,Low,Bug Queue,True
+86,help cmd: override --help flag,Sadbh,Done,Low,Feature,True
+87,--less flag: Use shutil.which('less') to check availability,Sadbh,Not Started,Low,Architecture,False
+88,"BUG: incorrect headers displaying for {mark,update}",Sadbh,Done,High,Bug Queue,True

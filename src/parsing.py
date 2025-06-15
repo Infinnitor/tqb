@@ -26,6 +26,17 @@ def serialize(path: str, tq: TaskQueue):
 def deserialize(path: str) -> TaskQueue:
     with open(path, "r", encoding="utf-8") as fp:
         reader = csv.reader(fp)
+
+        # # Take until CONFIG_BEGIN
+        # list(itertools.takewhile(lambda x: len(x) == 0 or x[0] != consts.CONFIG_BEGIN, reader))
+
+        # config_rows = list(
+        #     itertools.takewhile(lambda x: len(x) == 0 or x[0] != consts.CONFIG_END, reader)
+        # )
+
+        # configs = []
+
+        # Take until CONSTRAINTS_BEGIN
         list(itertools.takewhile(lambda x: x[0] != consts.CONSTRAINTS_BEGIN, reader))
 
         # Constraint headers
