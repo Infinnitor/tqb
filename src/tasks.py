@@ -22,7 +22,7 @@ class Task:
         items[queue.header_desc()] = description
 
         for k, v in items.items():
-            constraint = queue.constraints[k]
+            constraint = queue.find_constraint_fallback(k)
             value = v
 
             if value == "":
@@ -36,8 +36,10 @@ class Task:
         return Task(id=pkid, items=items, queue=queue)
 
     def update_column(self, k, v):
+        k = self.queue.smart_header_match(k)
+
         value = v
-        constraint = self.queue.constraints[k]
+        constraint = self.queue.find_constraint_fallback(k)
 
         if value == "":
             value = constraint.apply_default(value)
@@ -58,7 +60,7 @@ class Task:
 
     def matchi(self, header: str, cmp: str) -> bool:
         header_guess = self.queue.smart_header_match(header)
-        constraint = self.queue.constraints[header_guess]
+        constraint = self.queue.find_constraint_fallback(header_guess)
 
         item = self.geti(header_guess)
 
@@ -79,7 +81,7 @@ class Task:
         headers = self.queue.get_display_headers() if headers is None else headers
         row = []
         for k in headers:
-            constraint = self.queue.constraints[k]
+            constraint = self.queue.find_constraint_fallback(k)
             item = self.geti(k)
             item = item[: constraint.ColWidth] if constraint.ColWidth else item
             item = constraint.apply_colour(item)
@@ -171,6 +173,9 @@ class TaskQueue:
             (c for c in self.constraints.values() if c.__dict__[header] == value), None
         )
 
+    def find_constraint_fallback(self, header, value=None):
+        return self.find_constraint(header, value) or Constraint.empty(header)
+
     def remove_task(self, id: int) -> Task:
         start_len = len(self.tasks)
         for idx, task in enumerate(self.tasks):
@@ -198,7 +203,7 @@ class TaskQueue:
         return self.find_constraint("Role", "Status").HeaderName
 
     def get_display_headers(self) -> list[str]:
-        return [h for h in self.headers if not self.constraints[h].Hide]
+        return [h for h in self.headers if not self.find_constraint_fallback(h).Hide]
 
     def get_constraints_sorted_by_headers(self, headers=None):
         headers = headers or self.headers

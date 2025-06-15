@@ -26,13 +26,13 @@ def serialize(path: str, tq: TaskQueue):
 def deserialize(path: str) -> TaskQueue:
     with open(path, "r", encoding="utf-8") as fp:
         reader = csv.reader(fp)
-        list(itertools.takewhile(lambda x: x != [consts.CONSTRAINTS_BEGIN], reader))
+        list(itertools.takewhile(lambda x: x[0] != consts.CONSTRAINTS_BEGIN, reader))
 
         # Constraint headers
         _ = next(reader)
 
         constr_row = list(
-            itertools.takewhile(lambda x: x != [consts.CONSTRAINTS_END], reader)
+            itertools.takewhile(lambda x: x[0] != consts.CONSTRAINTS_END, reader)
         )
         constraints = list(map(Constraint.deserialize, constr_row))
         c_dict = {c.HeaderName: c for c in constraints}

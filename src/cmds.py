@@ -333,10 +333,13 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
         status_col = taskq.header_status()
         archive_col = taskq.header_archive()
 
+        constraint = taskq.find_constraint_fallback(status_col)
+        constrained_value = constraint.constrain_variant(args.value)
+
         table = []
         for id in args.ids:
             task = taskq.find_or_fail(id)
-            task.update_column(status_col, args.value)
+            task.update_column(status_col, constrained_value)
             if args.archive:
                 task.update_column(archive_col, "True")
 
@@ -346,7 +349,7 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
             table,
             taskq.headers,
             msg_after=[
-                f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {args.value}!"
+                f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {constrained_value}!"
             ],
             indent_table=(
                 colours.Indents.MARK
@@ -477,9 +480,12 @@ def column(parser: ArgumentParser, root: ArgumentParser):
                 del task.items[old_name]
                 task.items[args.name] = col_value
 
-            constraint = taskq.constraints[old_name]
+            constraint = taskq.find_constraint_fallback(old_name)
             constraint.HeaderName = args.name
-            del taskq.constraints[old_name]
+
+            if taskq.find_constraint(old_name):
+                del taskq.constraints[old_name]
+
             taskq.constraints[args.name] = constraint
 
             print(
@@ -506,7 +512,8 @@ def column(parser: ArgumentParser, root: ArgumentParser):
             for task in taskq.tasks:
                 del task.items[target]
 
-            del taskq.constraints[target]
+            if taskq.find_constraint(target):
+                del taskq.constraints[target]
 
             print(
                 util.star_symbol_surround(
@@ -590,10 +597,11 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
 
             assert column in consts.CONSTRAINTS_HEADERS
 
-            constraint = taskq.constraints[target]
+            constraint = taskq.find_constraint_fallback(target)
             parsed_column = constraint.__dict__[column].split("|")
             parsed_column.extend(args.properties)
             constraint.__dict__[column] = "|".join(parsed_column)
+            taskq.constraints[target] = constraint
 
             print(
                 util.star_symbol_surround(
