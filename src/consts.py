@@ -1,5 +1,7 @@
 APP_NAME = "tqb"
-
+APP_PRODUCTION = False
+APP_VERSION = "0.9a"
+APP_VERSION_STRING = f"{APP_NAME}-{APP_VERSION}-{'release' if APP_PRODUCTION else 'dev'}"
 
 DEFAULT_PATH = "taskqueue.csv"
 DEFAULT_HEADERS = ("Id", "Task", "Assignee", "Status", "Priority", "Archived")

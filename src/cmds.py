@@ -14,6 +14,16 @@ import util
 import fnmatch
 import itertools
 import colours
+from typing import Callable
+
+
+def tqb_serialize(func: Callable):
+    def inner(args: Namespace):
+        taskq = parsing.deserialize(args.path)
+        func(taskq, args)
+        parsing.serialize(args.path, taskq)
+
+    return inner
 
 
 def create(parser: ArgumentParser, root: ArgumentParser):
@@ -91,8 +101,8 @@ def help(parser: ArgumentParser, root: ArgumentParser):
 def ls(parser: ArgumentParser, root: ArgumentParser):
     """Display the task queue"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         headers = args.columns if args.columns else taskq.get_display_headers()
 
         if args.header is True:
@@ -147,6 +157,14 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
                     if not all(task.matchi(c, v) for c, _, v in parititioned):
                         continue
 
+                if args.search is not None:
+                    pat = f"*{args.search.lower()}*"
+                    if not any(
+                        fnmatch.fnmatch(str(value).lower(), pat)
+                        for value in task.items.values()
+                    ):
+                        continue
+
                 if args.ids:
                     table.append(str(task.geti(taskq.header_pk())))
                 else:
@@ -182,7 +200,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
         "-a", "--all", action="store_true", help="display archived tasks"
     )
 
-    parser.add_argument("-s", "--sort", default=None, help="sort by column")
+    parser.add_argument("--sort", default=None, help="sort by column")
 
     parser.add_argument(
         "-nt", "--notruncate", action="store_true", help="do not truncate output"
@@ -198,6 +216,12 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
         help="column=value filter clause (all must pass)",
     )
 
+    parser.add_argument(
+        "--search",
+        default=None,
+        help="search for value in across all columns",
+    )
+
     parser.add_argument("--ids", action="store_true", help="only output task ids")
 
     return inner
@@ -206,9 +230,8 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
 def add(parser: ArgumentParser, root: ArgumentParser):
     """Add a task with [description] to the task queue"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
-
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         new_task = Task.new_task(args.description, taskq)
         taskq.add_task(new_task)
 
@@ -218,7 +241,6 @@ def add(parser: ArgumentParser, root: ArgumentParser):
             msg_after=["added task to queue :3"],
             indent_table=colours.Indents.ADD,
         )
-        parsing.serialize(args.path, taskq)
 
     parser.add_argument("description", help="description of new task")
 
@@ -228,9 +250,8 @@ def add(parser: ArgumentParser, root: ArgumentParser):
 def find(parser: ArgumentParser, root: ArgumentParser):
     """Find a task by id and display it"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
-
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         task = taskq.find_or_fail(args.id)
         util.pretty_print_table(
             [task.to_display_row()],
@@ -246,9 +267,8 @@ def find(parser: ArgumentParser, root: ArgumentParser):
 def update(parser: ArgumentParser, root: ArgumentParser):
     """Set a task property to a new value"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
-
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         assert (
             taskq.smart_header_match(args.column) is not None
         ), f"column '{args.column}' is invalid"
@@ -270,7 +290,6 @@ def update(parser: ArgumentParser, root: ArgumentParser):
             ],
             indent_table=colours.Indents.UPDATE,
         )
-        parsing.serialize(args.path, taskq)
 
     parser.add_argument("ids", type=int, nargs="+", help="id of task to edit")
     parser.add_argument("column", help="column to update")
@@ -282,9 +301,8 @@ def update(parser: ArgumentParser, root: ArgumentParser):
 def remove(parser: ArgumentParser, root: ArgumentParser):
     """Remove a task by id"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
-
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         table = []
         for id in args.ids:
             taskq.find_or_fail(id)
@@ -302,8 +320,6 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
             indent_table=colours.Indents.REMOVE,
         )
 
-        parsing.serialize(args.path, taskq)
-
     parser.add_argument("ids", nargs="+", type=int, help="id of task to remove")
 
     return inner
@@ -312,9 +328,8 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
 def mark(parser: ArgumentParser, root: ArgumentParser):
     """Set a task Status"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
-
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         status_col = taskq.header_status()
         archive_col = taskq.header_archive()
 
@@ -333,9 +348,12 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
             msg_after=[
                 f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} marked as {args.value}!"
             ],
-            indent_table=colours.Indents.UPDATE,
+            indent_table=(
+                colours.Indents.MARK
+                if not args.archive
+                else colours.Indents.MARK_ARCHIVE
+            ),
         )
-        parsing.serialize(args.path, taskq)
 
     parser.add_argument("ids", type=int, nargs="+", help="ids of task to edit")
     parser.add_argument("value", help="new status of task")
@@ -349,9 +367,8 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
 def archive(parser: ArgumentParser, root: ArgumentParser):
     """Archive (hide) tasks"""
 
-    def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
-
+    @tqb_serialize
+    def inner(taskq: TaskQueue, args: Namespace):
         archive_col = taskq.header_archive()
 
         table = []
@@ -366,9 +383,10 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
             msg_after=[
                 f"{len(args.ids)} task{'s' if len(args.ids) > 1 else ''} archived :o"
             ],
-            indent_table=colours.Indents.ARCHIVE if args.undo else colours.Indents.ARCHIVE_UNDO,
+            indent_table=(
+                colours.Indents.ARCHIVE if args.undo else colours.Indents.ARCHIVE_UNDO
+            ),
         )
-        parsing.serialize(args.path, taskq)
 
     parser.add_argument("ids", nargs="+", type=int, help="ids of task to archive")
     parser.add_argument("-u", "--undo", action="store_false", help="undo archive")
@@ -399,9 +417,9 @@ def column(parser: ArgumentParser, root: ArgumentParser):
     """Subcommand for adding, moving, renaming and removing columns"""
 
     def add(sparser: ArgumentParser):
-        def inner(args: Namespace):
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
-            taskq = parsing.deserialize(args.path)
 
             assert target not in taskq.headers, f"column named {target} already exists"
 
@@ -410,8 +428,6 @@ def column(parser: ArgumentParser, root: ArgumentParser):
                 task.items[target] = ""
 
             taskq.constraints[target] = Constraint.empty(target)
-
-            parsing.serialize(args.path, taskq)
 
             print(
                 util.star_symbol_surround(
@@ -423,9 +439,9 @@ def column(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def move(sparser: ArgumentParser):
-        def inner(args: Namespace):
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
-            taskq = parsing.deserialize(args.path)
 
             assert target in taskq.headers, "column named {target} does not exist"
 
@@ -433,21 +449,22 @@ def column(parser: ArgumentParser, root: ArgumentParser):
             taskq.headers.pop(cidx)
             taskq.headers.insert(args.index, target)
 
-            parsing.serialize(args.path, taskq)
-
             print(
                 util.star_symbol_surround(
-                    f"column {target} moved to index {args.index}", consts.STAR_MSG_OUTPUT_WIDTH
+                    f"column {target} moved to index {args.index}",
+                    consts.STAR_MSG_OUTPUT_WIDTH,
                 )
             )
 
         sparser.add_argument("target", help="column to move")
-        sparser.add_argument("index", type=int, help="index to move column to (0 = start)")
+        sparser.add_argument(
+            "index", type=int, help="index to move column to (0 = start)"
+        )
         return inner
 
     def rename(sparser: ArgumentParser):
-        def inner(args: Namespace):
-            taskq = parsing.deserialize(args.path)
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             old_name = args.target
 
             assert old_name in taskq.headers, "column named {target} does not exist"
@@ -461,14 +478,14 @@ def column(parser: ArgumentParser, root: ArgumentParser):
                 task.items[args.name] = col_value
 
             constraint = taskq.constraints[old_name]
+            constraint.HeaderName = args.name
             del taskq.constraints[old_name]
             taskq.constraints[args.name] = constraint
 
-            parsing.serialize(args.path, taskq)
-
             print(
                 util.star_symbol_surround(
-                    f"column {old_name} renamed to {args.name}", consts.STAR_MSG_OUTPUT_WIDTH
+                    f"column {old_name} renamed to {args.name}",
+                    consts.STAR_MSG_OUTPUT_WIDTH,
                 )
             )
 
@@ -477,7 +494,8 @@ def column(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def remove(sparser: ArgumentParser):
-        def inner(args: Namespace):
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             taskq = parsing.deserialize(args.path)
             target = args.target
             assert target in taskq.headers, "column named {target} does not exist"
@@ -489,11 +507,11 @@ def column(parser: ArgumentParser, root: ArgumentParser):
                 del task.items[target]
 
             del taskq.constraints[target]
-            parsing.serialize(args.path, taskq)
 
             print(
                 util.star_symbol_surround(
-                    f"column {target} successfully removed", consts.STAR_MSG_OUTPUT_WIDTH
+                    f"column {target} successfully removed",
+                    consts.STAR_MSG_OUTPUT_WIDTH,
                 )
             )
 
@@ -514,8 +532,8 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
     def add(sparser: ArgumentParser):
         """Add constraint"""
 
-        def inner(args: Namespace):
-            taskq = parsing.deserialize(args.path)
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
             assert taskq.find_constraint(target) is None, "constraint already exists"
 
@@ -528,7 +546,6 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
 
             constraint = parsing.Constraint.kwargs(**items)
             taskq.add_constraint(constraint)
-            parsing.serialize(args.path, taskq)
 
         sparser.add_argument("target", help="header name to add constraint to")
         sparser.add_argument("properties", nargs="+", help="properties to modify")
@@ -538,8 +555,8 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
     def alter(sparser: ArgumentParser):
         """Alter existing constraint"""
 
-        def inner(args: Namespace):
-            taskq = parsing.deserialize(args.path)
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
             constraint = taskq.find_constraint(target)
             assert constraint is not None, "constraint does not exist, cannot alter"
@@ -548,7 +565,6 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
                 k, _, v = pair.partition("=")
                 constraint.__dict__[k] = v
 
-            parsing.serialize(args.path, taskq)
             print(
                 util.star_symbol_surround(
                     "constraint altered", consts.STAR_MSG_OUTPUT_WIDTH
@@ -563,8 +579,8 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
     def append(sparser: ArgumentParser):
         """Add additional value to group constraints"""
 
-        def inner(args: Namespace):
-            taskq = parsing.deserialize(args.path)
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
             column = args.constraint
 
@@ -579,7 +595,6 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
             parsed_column.extend(args.properties)
             constraint.__dict__[column] = "|".join(parsed_column)
 
-            parsing.serialize(args.path, taskq)
             print(
                 util.star_symbol_surround(
                     "constraint properties appended", consts.STAR_MSG_OUTPUT_WIDTH
@@ -595,8 +610,8 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
     def remove(sparser: ArgumentParser):
         """Remove constraint"""
 
-        def inner(args: Namespace):
-            taskq = parsing.deserialize(args.path)
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
 
             assert (
@@ -609,7 +624,6 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
                     "constraint removed", consts.STAR_MSG_OUTPUT_WIDTH
                 )
             )
-            parsing.serialize(args.path, taskq)
 
         sparser.add_argument("target", help="header name of constraint to remove")
 
@@ -618,8 +632,8 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
     def ls(sparser: ArgumentParser):
         """Remove constraint"""
 
-        def inner(args: Namespace):
-            taskq = parsing.deserialize(args.path)
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
             headers = args.columns if args.columns else consts.CONSTRAINTS_HEADERS
 
             if args.header is True:
