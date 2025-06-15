@@ -1,5 +1,7 @@
 from enum import StrEnum
 from colorama import Fore
+import colorama
+colorama.init()
 
 
 class Indents(StrEnum):

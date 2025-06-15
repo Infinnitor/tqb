@@ -103,4 +103,6 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 87,--less flag: Use shutil.which('less') to check availability,Sadbh,Done,Low,Architecture,True
 88,"BUG: incorrect headers displaying for {mark,update}",Sadbh,Done,High,Bug Queue,True
 89,config cmd: prevent duplicate rows,Sadbh,Done,Low,Architecture,True
-90,default case for an empty task queue,Sadbh,Not Started,Low,,False
+90,default case for an empty task queue,Sadbh,Cancelled,Low,Architecture,False
+91,config: DefaultPath option,Sadbh,Cancelled,Low,Architecture,True
+92,Scope colorama.init() for windows compat,Sadbh,Done,Low,Architecture,True

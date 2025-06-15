@@ -23,17 +23,7 @@ def tqb_serialize(func: Callable):
     def inner(args: Namespace):
         taskq = parsing.deserialize(args.path)
         globals.USE_LESS_FOR_OUTPUT = args.less
-        globals.QUIET_OPTION_SET = (
-            next(
-                (
-                    c
-                    for c in taskq.config.get_all("GlobalQuiet")
-                    if c.Value not in ("", "False", "0")
-                ),
-                False,
-            )
-            or args.quiet
-        )
+        globals.QUIET_OPTION_SET = bool(taskq.config.get_value("GlobalQuiet", False))
 
         func(taskq, args)
         parsing.serialize(args.path, taskq)
@@ -369,7 +359,6 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
         status_col = taskq.header_status()
-        archive_col = taskq.header_archive()
 
         constraint = taskq.find_constraint_fallback(status_col)
         constrained_value = constraint.constrain_variant(args.value)
@@ -379,6 +368,7 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
             task = taskq.find_or_fail(id)
             task.update_column(status_col, constrained_value)
             if args.archive:
+                archive_col = taskq.header_archive()
                 task.update_column(archive_col, "True")
 
             table.append(task.to_display_row())

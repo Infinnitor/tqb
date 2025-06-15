@@ -41,6 +41,12 @@ class Config:
     def get_all(self, key) -> list[ConfigPair]:
         return [pair for pair in self.configs if pair.Key == key]
 
+    def get_value(self, key, default=None):
+        pair = self.get(key)
+        if pair:
+            return pair.Value
+        return default
+
     def get_and_apply(self, key, func):
         q = self.get(key)
         if q is not None:
