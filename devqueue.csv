@@ -90,11 +90,11 @@ Id,Task,Assignee,Status,Priority,Area,Archived
 76,Create colours.Indents enum,Sadbh,Done,Low,Frontend,True
 77,Review all tasks and assign projects,Sadbh,Done,Low,Management,True
 78,BUG: column rename cmd does not update constraint name,Sadbh,Done,Low,Bug Queue,True
-79,alias cmd: create aliases for long cmds,Sadbh,Backlog,Low,Feature,True
+79,alias cmd: create aliases for long cmds,Sadbh,Not Started,Low,Feature,False
 80,Update parsing.deserialize to be more error tolerant,Sadbh,Done,Low,Architecture,True
 81,BUG: Some characters offset or missing with --less,Sadbh,Not Started,Low,Bug Queue,False
-82,TaskQueue config architecture and parsing,Sadbh,In Progress,High,Architecture,False
-83,"config{ls,set,get} cmd",Sadbh,Dependant,High,Architecture,False
+82,TaskQueue config architecture and parsing,Sadbh,Done,High,Architecture,False
+83,"config{ls,set,get} cmd",Sadbh,In Progress,High,Architecture,False
 84,ls cmd: --show-all-columns option,Sadbh,Done,High,Feature,True
 85,BUG: TaskQueue.get_column_widths does not respect Hide constraint,Sadbh,Done,Low,Bug Queue,True
 86,help cmd: override --help flag,Sadbh,Done,Low,Feature,True

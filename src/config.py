@@ -1,40 +1,45 @@
 from dataclasses import dataclass
+from typing import Optional, Self
 
 
 @dataclass
 class ConfigPair:
-    key: str
-    value: str
-    opt: str
+    Key: str
+    Value: str
+    Opt: str
 
     @classmethod
     def deserialize(cls, row: list[str]):
         return cls(*row)
 
     def serialize(self):
-        return [self.key, self.value, self.opt]
+        return [self.Key, self.Value, self.Opt]
 
 
 @dataclass
 class Config:
-    configs: dict[str, ConfigPair]
+    configs: list[ConfigPair]
 
     @classmethod
     def empty(cls):
-        return Config({})
+        return Config([])
 
     @classmethod
-    def from_list(cls, configs: list[ConfigPair]):
+    def from_list(cls, configs: list[ConfigPair]) -> Self:
         self = cls.empty()
 
         for pair in configs:
             self.add_config_pair(pair)
+        return self
 
     def add_config_pair(self, pair):
-        self.configs[pair.key] = pair
+        self.configs.append(pair)
 
-    def get(self, key):
-        return self.configs.get(key, None)
+    def get(self, key) -> Optional[ConfigPair]:
+        return next((pair for pair in self.configs if pair.Key == key), None)
+
+    def get_all(self, key) -> list[ConfigPair]:
+        return next(pair for pair in self.configs if pair.Key == key)
 
     def get_and_apply(self, key, func):
         q = self.get(key)

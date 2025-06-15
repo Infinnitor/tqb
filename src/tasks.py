@@ -144,12 +144,12 @@ class TaskQueue:
         ]
 
         constraints = {c.HeaderName: c for c in constraint_list}
-        return TaskQueue(constraints=constraints, headers=headers, tasks=[], config=Config.empty())
+        return cls(constraints=constraints, headers=headers, tasks=[], config=Config.empty())
 
     @classmethod
     def from_headers(cls, headers):
         constraints = {k: Constraint.empty(k) for k in headers}
-        tq = cls(constraints=constraints, headers=headers, tasks=[])
+        tq = cls(constraints=constraints, headers=headers, tasks=[], config=Config.empty())
         return tq
 
     def add_task(self, task):
