@@ -1,5 +1,6 @@
 from constraints import Constraint
 from tasks import TaskQueue, Task
+from configs import ConfigPair, Config
 import csv
 import itertools
 import consts
@@ -8,6 +9,14 @@ import consts
 def serialize(path: str, tq: TaskQueue):
     with open(path, "w+") as fp:
         writer = csv.writer(fp)
+        writer.writerow([consts.CONFIG_BEGIN])
+        writer.writerow([consts.CONFIG_HEADERS])
+
+        for cfg in tq.config:
+            writer.writerow(cfg.serialize())
+
+        writer.writerow(consts.CONFIG_END)
+
         writer.writerow([consts.CONSTRAINTS_BEGIN])
         writer.writerow(consts.CONSTRAINTS_HEADERS)
 
@@ -27,14 +36,14 @@ def deserialize(path: str) -> TaskQueue:
     with open(path, "r", encoding="utf-8") as fp:
         reader = csv.reader(fp)
 
-        # # Take until CONFIG_BEGIN
-        # list(itertools.takewhile(lambda x: len(x) == 0 or x[0] != consts.CONFIG_BEGIN, reader))
+        # Take until CONFIG_BEGIN
+        list(itertools.takewhile(lambda x: len(x) == 0 or x[0] != consts.CONFIG_BEGIN, reader))
 
-        # config_rows = list(
-        #     itertools.takewhile(lambda x: len(x) == 0 or x[0] != consts.CONFIG_END, reader)
-        # )
+        config_rows = list(
+            itertools.takewhile(lambda x: len(x) == 0 or x[0] != consts.CONFIG_END, reader)
+        )
 
-        # configs = []
+        configs = [ConfigPair.deserialize(row) for row in config_rows]
 
         # Take until CONSTRAINTS_BEGIN
         list(itertools.takewhile(lambda x: x[0] != consts.CONSTRAINTS_BEGIN, reader))

@@ -13,6 +13,7 @@ CONSTRAINTS_END = "# END CONSTRAINTS"
 CONSTRAINT_ROLES = ("Status", "PrimaryKey", "Archiving", "Description")
 
 CONFIG_BEGIN = "# BEGIN CONFIG"
+CONFIG_HEADERS = ("Key", "Value", "Opt")
 CONFIG_END = "# END CONFIG"
 
 HEADER_ID_STRING = "Id"

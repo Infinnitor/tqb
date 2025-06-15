@@ -6,6 +6,7 @@ from typing import Self, Optional, Any
 from colorama import Fore
 import fnmatch
 from constraints import Constraint
+from config import Config
 
 
 @dataclass
@@ -106,6 +107,7 @@ class TaskQueue:
     constraints: dict[str, Constraint]
     tasks: list[Task]
     headers: list[str]
+    config: Config
 
     @classmethod
     def default(cls):
@@ -142,7 +144,7 @@ class TaskQueue:
         ]
 
         constraints = {c.HeaderName: c for c in constraint_list}
-        return TaskQueue(constraints=constraints, headers=headers, tasks=[])
+        return TaskQueue(constraints=constraints, headers=headers, tasks=[], config=Config.empty())
 
     @classmethod
     def from_headers(cls, headers):

@@ -115,10 +115,7 @@ def pretty_print_table(
 
     prettified = style_txt_process(txt)
     if indent_table:
-        lines = [
-            f"{indent_table} {line}"
-            for line in prettified.split("\n")
-        ]
+        lines = [f"{indent_table} {line}" for line in prettified.split("\n")]
         prettified = "\n".join(lines)
 
     prettified = truncate_table_width(prettified) + Fore.RESET
@@ -127,10 +124,23 @@ def pretty_print_table(
     final_text = prettified
 
     if not globals.QUIET_OPTION_SET:
-        final_text = "\n".join(star_symbol_surround(msg, table_visual_width) for msg in msg_before) + "\n" + final_text
-        final_text = final_text + "\n" + "\n".join(star_symbol_surround(msg, table_visual_width) for msg in msg_after)
+        final_text = (
+            "\n".join(
+                star_symbol_surround(msg, table_visual_width) for msg in msg_before
+            )
+            + "\n"
+            + final_text
+        )
+        final_text = (
+            final_text
+            + "\n"
+            + "\n".join(
+                star_symbol_surround(msg, table_visual_width) for msg in msg_after
+            )
+        )
 
     if globals.USE_LESS_FOR_OUTPUT:
-        os.system(f"echo \"{final_text}\" | less +gg -SRCQaix4 --tilde")
+        assert shutil.which("less"), "'less' could not be found on PATH, ensure that you have it installed before using the --less option"
+        os.system(f'echo "{final_text}" | less +gg -SRCQaix4 --tilde')
     else:
         print(final_text)
