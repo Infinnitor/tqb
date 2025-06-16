@@ -1,22 +1,25 @@
-from argparse import Namespace, ArgumentParser
-import csv
-import consts
-import parsing
-from tasks import Task, TaskQueue
-from constraints import Constraint
-from tabulate import tabulate
-import random
 import os
+import csv
+import random
 import globals
-from colorama import Fore
-import util
 import fnmatch
 import itertools
-import colours
-from typing import Callable
-from config import Config, ConfigPair
 import shlex
+import program
+
+from typing import Callable
+from argparse import Namespace, ArgumentParser
+
+import consts
+import parsing
+import colours
+import util
+from tasks import Task, TaskQueue
+from constraints import Constraint
+from config import Config, ConfigPair
+
 import pyperclip
+from colorama import Fore
 
 
 def tqb_serialize(func: Callable):
@@ -132,7 +135,9 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
             ids_list = []
 
             if args.sort is not None:
-                assert taskq.smart_header_match(args.sort), f"sorting column {args.sort} is not a valid header"
+                assert taskq.smart_header_match(
+                    args.sort
+                ), f"sorting column {args.sort} is not a valid header"
                 tasks_list = sorted(
                     tasks_list, key=lambda x: x.geti(args.sort), reverse=True
                 )
@@ -465,20 +470,7 @@ def alias(parser: ArgumentParser, root: ArgumentParser):
                 parsed.func.__name__ != "alias"
             ), "do NOT recursively run alias commands lol"
 
-        globals.USE_LESS_FOR_OUTPUT = parsed.less
-        globals.QUIET_OPTION_SET = parsed.quiet
-
-        if parsed.clear:
-            os.system("clear")
-
-        if parsed.help:
-            parsed = root.parse_args(run_args + ["help"])
-            parsed.func(parsed)
-        elif hasattr(parsed, "func"):
-            parsed.func(parsed)
-        else:
-            parsed = root.parse_args(run_args + [consts.DEFAULT_SUBCOMMAND])
-            parsed.func(parsed)
+        program.runner(root, run_args)
 
     parser.add_argument("name", help="name of the alias to use")
     parser.add_argument(

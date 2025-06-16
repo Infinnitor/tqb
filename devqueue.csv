@@ -2,6 +2,7 @@
 Key,Value,Opt
 Alias,lshp,--path devqueue.csv ls --where Priority=High
 Alias,lsbck,--path devqueue.csv ls --all --where Status=Backlog
+Alias,priority,--path devqueue.csv update $0 Priority $1
 # END CONFIG
 # BEGIN CONSTRAINTS
 HeaderName,ConstrainType,ConstrainVariant,Default,ColWidth,Colours,Role,Autofill,Hide
@@ -108,5 +109,6 @@ Id,Task,Status,Priority,Area,Archived
 93,ls cmd: migrate --sort to smart headers,Done,Low,Architecture,True
 94,BUG: column remove not working,Done,Low,Bug Queue,True
 95,Change TaskQueue.add_task behaviour to return task,Done,Low,Architecture,True
-96,Begin writing basic feature tests,Dependant,Low,Testing,False
-97,Create program module for programatically executing based on args,In Progress,Low,Architecture,False
+96,Begin writing basic feature tests,In Progress,Low,Testing,False
+97,Create program module for programatically executing based on args,Done,Low,Architecture,True
+98,Review CONSTRAINTS_HEADERS names,Not Started,Low,Release,False

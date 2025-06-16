@@ -5,9 +5,10 @@ import cmds
 import consts
 import globals
 import os
+import program
 
 
-def program_args() -> argparse.ArgumentParser:
+def program_argument_parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog=consts.APP_NAME, add_help=False)
     root.add_argument("-h", "--help", action="store_true", help="show the help message")
     root.add_argument("--path", nargs="?", default=consts.DEFAULT_PATH, help="path to task queue file")
@@ -28,23 +29,7 @@ def program_args() -> argparse.ArgumentParser:
 
 
 def main(argv):
-    argp = program_args()
-
-    parsed = argp.parse_args(argv[1:])
-    globals.USE_LESS_FOR_OUTPUT = parsed.less
-    globals.QUIET_OPTION_SET = parsed.quiet
-
-    if parsed.clear:
-        os.system("clear")
-
-    if parsed.help:
-        parsed = argp.parse_args(argv[1:] + ["help"])
-        parsed.func(parsed)
-    elif hasattr(parsed, "func"):
-        parsed.func(parsed)
-    else:
-        parsed = argp.parse_args(argv[1:] + [consts.DEFAULT_SUBCOMMAND])
-        parsed.func(parsed)
+    program.runner(program_argument_parser(), argv[1:])
 
 
 if __name__ == "__main__":
