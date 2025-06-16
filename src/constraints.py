@@ -62,18 +62,32 @@ class Constraint:
         return row
 
     def apply_colour(self, value: Any):
+        def get_clr(name):
+            if name.startswith("#"):
+                if len(name) != 7:
+                    return Fore.RESET
+
+                try:
+                    r, g, b = int(name[1:3], 16), int(name[3:5], 16), int(name[5:], 16)
+                    return f"\033[38;2;{r};{g};{b}m"
+
+                except ValueError:
+                    return Fore.RESET
+
+            return Fore.__dict__.get(name, Fore.RESET)
+
         if not isinstance(value, str):
             value = str(value)
 
         colours = self.Colours.split("|")
-        if not any(colours):
+        if not colours:
             return value
 
         for cpair in colours:
             pattern, _, colour = cpair.partition("=")
 
             if fnmatch.fnmatch(value.lower(), pattern.lower()):
-                return Fore.__dict__.get(colour, Fore.RESET) + str(value) + Fore.RESET
+                return get_clr(colour) + str(value) + Fore.RESET
 
         return value
 
@@ -85,7 +99,9 @@ class Constraint:
             try:
                 return CONSTRAINT_MAP[self.ConstrainType](value)
             except ValueError:
-                raise AssertionError(f"constraint failed for type {self.ConstrainType} on column {self.HeaderName}")
+                raise AssertionError(
+                    f"constraint failed for type {self.ConstrainType} on column {self.HeaderName}"
+                )
         return value
 
     def get_variant_constraints(self):
@@ -105,6 +121,8 @@ class Constraint:
                 if lvariant == lvalue:
                     return variant
 
-            raise ValueError(f"constraint for ConstrainVariant failed for value \"{value}\" on column {self.HeaderName} (must be one of {self.get_variant_constraints()})")
+            raise ValueError(
+                f'constraint for ConstrainVariant failed for value "{value}" on column {self.HeaderName} (must be one of {self.get_variant_constraints()})'
+            )
 
         return value

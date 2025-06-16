@@ -154,6 +154,7 @@ class TaskQueue:
 
     def add_task(self, task):
         self.tasks.append(task)
+        return task
 
     def add_constraint(self, constraint):
         self.constraints[constraint.HeaderName] = constraint

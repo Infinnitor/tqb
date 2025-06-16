@@ -132,9 +132,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
             ids_list = []
 
             if args.sort is not None:
-                assert (
-                    args.sort in taskq.headers
-                ), f"sorting column {args.sort} is not a valid header"
+                assert taskq.smart_header_match(args.sort), f"sorting column {args.sort} is not a valid header"
                 tasks_list = sorted(
                     tasks_list, key=lambda x: x.geti(args.sort), reverse=True
                 )
@@ -255,6 +253,10 @@ def add(parser: ArgumentParser, root: ArgumentParser):
         new_task = Task.new_task(args.description, taskq)
         taskq.add_task(new_task)
 
+        for property in args.properties:
+            prop, _, value = property.partition("=")
+            new_task.update_column(prop, value)
+
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
                 [new_task.to_display_row()],
@@ -264,6 +266,7 @@ def add(parser: ArgumentParser, root: ArgumentParser):
             )
 
     parser.add_argument("description", help="description of new task")
+    parser.add_argument("properties", nargs="*", help="additional properties to assign")
 
     return inner
 
@@ -591,9 +594,10 @@ def column(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def remove(sparser: ArgumentParser):
+        """Remove column"""
+
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
-            taskq = parsing.deserialize(args.path)
             target = args.target
             assert target in taskq.headers, "column named {target} does not exist"
 

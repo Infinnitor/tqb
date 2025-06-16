@@ -9,6 +9,8 @@ import shutil
 
 
 def get_terminal_size() -> tuple[int, int]:
+    if globals.USE_LESS_FOR_OUTPUT:
+        return consts.FALLBACK_TERMINAL_SIZE
     try:
         return os.get_terminal_size()
     except OSError:
