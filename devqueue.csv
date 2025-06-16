@@ -84,7 +84,7 @@ Id,Task,Status,Priority,Area,Archived
 69,Remove TaskQueue.constraints key indexing,Done,High,Architecture,True
 70,Bug test column cmd,Backlog,Low,Testing,True
 71,column cmd: output on subcommand success,Done,Low,Feature,True
-72,Scope creation of automated testing system with pytest,In Progress,Low,Testing,False
+72,Scope creation of automated testing system with pytest,Done,Low,Testing,True
 73,Update all cmds to respect Hide constraint,Done,Low,Architecture,True
 74,Type hint all functions,Not Started,Medium,Release,False
 75,ls cmd: --search flag,Done,Low,Feature,True
@@ -108,3 +108,5 @@ Id,Task,Status,Priority,Area,Archived
 93,ls cmd: migrate --sort to smart headers,Done,Low,Architecture,True
 94,BUG: column remove not working,Done,Low,Bug Queue,True
 95,Change TaskQueue.add_task behaviour to return task,Done,Low,Architecture,True
+96,Begin writing basic feature tests,Dependant,Low,Testing,False
+97,Create program module for programatically executing based on args,In Progress,Low,Architecture,False
