@@ -14,8 +14,8 @@ CONSTRAINT_MAP = {
 @dataclass
 class Constraint:
     HeaderName: str
-    ConstrainType: str
-    ConstrainVariant: str
+    Type: str
+    Variant: str
     Default: str
     ColWidth: int
     Colours: str
@@ -95,22 +95,22 @@ class Constraint:
         return self.Default or value
 
     def constrain_type(self, value: Any) -> Any:
-        if self.ConstrainType and CONSTRAINT_MAP.get(self.ConstrainType):
+        if self.Type and CONSTRAINT_MAP.get(self.Type):
             try:
-                return CONSTRAINT_MAP[self.ConstrainType](value)
+                return CONSTRAINT_MAP[self.Type](value)
             except ValueError:
                 raise AssertionError(
-                    f"constraint failed for type {self.ConstrainType} on column {self.HeaderName}"
+                    f"constraint failed for type {self.Type} on column {self.HeaderName}"
                 )
         return value
 
     def get_variant_constraints(self):
-        return [""] + self.ConstrainVariant.split("|")
+        return [""] + self.Variant.split("|")
 
     def constrain_variant(self, value: Any) -> Any:
         lvalue = str(value).lower()
 
-        if self.ConstrainVariant:
+        if self.Variant:
             for variant in self.get_variant_constraints():
                 lvariant = variant.lower()
 

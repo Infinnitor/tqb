@@ -28,9 +28,8 @@ def tqb_serialize(func: Callable):
         try:
             taskq = parsing.deserialize(args.path)
         except FileNotFoundError:
-            raise AssertionError(f"taskqueue not found '{args.path}'")
+            raise AssertionError(f"taskqueue not found at path '{args.path}'")
 
-        globals.USE_LESS_FOR_OUTPUT = args.less
         globals.QUIET_OPTION_SET = bool(taskq.config.get_value("GlobalQuiet", False))
 
         func(taskq, args)

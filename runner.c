@@ -98,11 +98,27 @@ int main(int argc, char** argv) {
 
 	for (int i=1; i<argc; i++) {
 		char* arg = argv[i];
-		int new_len = strlen(command) + 1 + strlen(arg);
+		size_t arg_size = strlen(arg);
+
+		int quoted_arg = 0;
+		if (strchr(arg, ' ') != NULL) {
+			arg_size += 2;
+			quoted_arg = 1;
+		}
+
+		int new_len = strlen(command) + 1 + arg_size;
 
 		command = realloc(command, new_len);
 		strcat(command, " ");
+		if (quoted_arg) {
+			strcat(command, "\"");
+		}
+
 		strcat(command, arg);
+
+		if (quoted_arg) {
+			strcat(command, "\"");
+		}
 	}
 
 	system(command);

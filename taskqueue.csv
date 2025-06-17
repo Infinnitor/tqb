@@ -5,7 +5,7 @@ Alias,lsbck,--path devqueue.csv ls --all --where Status=Backlog
 Alias,priority,--path devqueue.csv update $0 Priority $1
 # END CONFIG
 # BEGIN CONSTRAINTS
-HeaderName,ConstrainType,ConstrainVariant,Default,ColWidth,Colours,Role,Autofill,Hide
+HeaderName,Type,Variant,Default,ColWidth,Colours,Role,Autofill,Hide
 Id,int,,,,*=BLUE,PrimaryKey,False,False
 Archived,bool,True|False,False,,*=RED,Archiving,False,True
 Priority,,High|Medium|Low|Critical,Low,8,high=RED|medium=YELLOW|low=BLUE|critical=MAGENTA,,True,False
@@ -56,7 +56,7 @@ Id,Task,Status,Priority,Area,Archived
 40,ls cmd: implement --whereor flag,Done,Low,Feature,True
 41,ls cmd: --ids flag for plain output,Done,Low,Feature,True
 42,BUG: pretty_print_table sometimes failing when 0 elements passed,Done,Low,Bug Queue,True
-43,"Update cmds using nargs=""*""",Done,Low,Architecture,True
+43,Update cmds currently using nargs,Done,Low,Architecture,True
 44,ls cmd: --copyids option,Done,Low,Feature,True
 45,Global -q --quiet command for status msgs and diff outputs,Done,Low,Feature,True
 46,Visual indicator for when cmd output is not ls,Done,Low,Architecture,True
@@ -87,7 +87,7 @@ Id,Task,Status,Priority,Area,Archived
 71,column cmd: output on subcommand success,Done,Low,Feature,True
 72,Scope creation of automated testing system with pytest,Done,Low,Testing,True
 73,Update all cmds to respect Hide constraint,Done,Low,Architecture,True
-74,Type hint all functions,Not Started,Medium,Release,False
+74,Type hint all functions,In Progress,Medium,Release,False
 75,ls cmd: --search flag,Done,Low,Feature,True
 76,Create colours.Indents enum,Done,Low,Frontend,True
 77,Review all tasks and assign projects,Done,Low,Management,True
@@ -111,5 +111,6 @@ Id,Task,Status,Priority,Area,Archived
 95,Change TaskQueue.add_task behaviour to return task,Done,Low,Architecture,True
 96,Write CRUD feature tests,Done,Low,Testing,True
 97,Create program module for programatically executing based on args,Done,Low,Architecture,True
-98,Review CONSTRAINTS_HEADERS names,Not Started,Low,Release,False
+98,Review CONSTRAINTS_HEADERS names,Done,Low,Release,True
 99,Create runner.c program,Done,High,Release,True
+100,Prepare for release,Not Started,Low,,False

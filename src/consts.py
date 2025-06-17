@@ -1,5 +1,5 @@
 APP_NAME = "tqb"
-APP_PRODUCTION = False
+APP_PRODUCTION = True
 APP_VERSION = "0.9a"
 APP_VERSION_STRING = f"{APP_NAME}-{APP_VERSION}-{'release' if APP_PRODUCTION else 'dev'}"
 
@@ -8,7 +8,7 @@ DEFAULT_HEADERS = ("Id", "Task", "Assignee", "Status", "Priority", "Archived")
 DEFAULT_SUBCOMMAND = "help"
 
 CONSTRAINTS_BEGIN = "# BEGIN CONSTRAINTS"
-CONSTRAINTS_HEADERS = ("HeaderName", "ConstrainType", "ConstrainVariant", "Default", "ColWidth", "Colours", "Role", "Autofill", "Hide")
+CONSTRAINTS_HEADERS = ("HeaderName", "Type", "Variant", "Default", "ColWidth", "Colours", "Role", "Autofill", "Hide")
 CONSTRAINTS_END = "# END CONSTRAINTS"
 CONSTRAINT_ROLES = ("Status", "PrimaryKey", "Archiving", "Description")
 
