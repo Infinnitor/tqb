@@ -21,3 +21,10 @@ def runner(parser, argv):
     else:
         parsed = argp.parse_args(argv + [consts.DEFAULT_SUBCOMMAND])
         parsed.func(parsed)
+
+
+def runner_with_handling(parser, argv):
+    try:
+        runner(parser, argv)
+    except AssertionError as e:
+        parser.error(e)

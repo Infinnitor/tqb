@@ -121,8 +121,8 @@ class Constraint:
                 if lvariant == lvalue:
                     return variant
 
-            raise ValueError(
-                f'constraint for ConstrainVariant failed for value "{value}" on column {self.HeaderName} (must be one of {self.get_variant_constraints()})'
+            raise AssertionError(
+                f"column {self.HeaderName} must be one of {tuple(self.get_variant_constraints())}"
             )
 
         return value

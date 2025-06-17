@@ -52,7 +52,7 @@ Id,Task,Status,Priority,Area,Archived
 36,ls cmd: sorting by property,Done,Low,Feature,True
 37,Migrate direct header references to Task.geti,Done,High,Architecture,True
 38,Finish constraint append cmd,Done,High,Feature,True
-39,Add AssertionError handling,Not Started,High,Release,False
+39,Add AssertionError handling,Done,High,Release,True
 40,ls cmd: implement --whereor flag,Done,Low,Feature,True
 41,ls cmd: --ids flag for plain output,Done,Low,Feature,True
 42,BUG: pretty_print_table sometimes failing when 0 elements passed,Done,Low,Bug Queue,True

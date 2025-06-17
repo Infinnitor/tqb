@@ -29,7 +29,7 @@ def program_argument_parser() -> argparse.ArgumentParser:
 
 
 def main(argv):
-    program.runner(program_argument_parser(), argv[1:])
+    program.runner_with_handling(program_argument_parser(), argv[1:])
 
 
 if __name__ == "__main__":
