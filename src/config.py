@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Optional, Self, Callable, Any
 
 
 @dataclass
@@ -21,8 +21,8 @@ class Config:
     configs: list[ConfigPair]
 
     @classmethod
-    def empty(cls):
-        return Config([])
+    def empty(cls) -> Self:
+        return cls([])
 
     @classmethod
     def from_list(cls, configs: list[ConfigPair]) -> Self:
@@ -32,22 +32,22 @@ class Config:
             self.add_config_pair(pair)
         return self
 
-    def add_config_pair(self, pair):
+    def add_config_pair(self, pair: ConfigPair):
         self.configs.append(pair)
 
-    def get(self, key) -> Optional[ConfigPair]:
+    def get(self, key: str) -> Optional[ConfigPair]:
         return next((pair for pair in self.configs if pair.Key == key), None)
 
-    def get_all(self, key) -> list[ConfigPair]:
+    def get_all(self, key: str) -> list[ConfigPair]:
         return [pair for pair in self.configs if pair.Key == key]
 
-    def get_value(self, key, default=None):
+    def get_value(self, key: str, default: Optional[Any] = None) -> Optional[str]:
         pair = self.get(key)
         if pair:
             return pair.Value
         return default
 
-    def get_and_apply(self, key, func):
+    def get_and_apply[T](self, key: str, func: Callable[[ConfigPair], T]):
         q = self.get(key)
         if q is not None:
             return func(q)

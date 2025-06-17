@@ -7,7 +7,7 @@ import itertools
 import shlex
 import program
 
-from typing import Callable
+from typing import Callable, Iterable
 from argparse import Namespace, ArgumentParser
 
 import consts
@@ -45,7 +45,6 @@ def create(parser: ArgumentParser, root: ArgumentParser):
         headers = args.headers.copy()
 
         msg_before = []
-        msg_after = []
 
         assert not os.path.exists(args.path), "taskqueue already exists at specified path"
 
@@ -69,7 +68,7 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
         if not globals.QUIET_OPTION_SET:
             util.pretty_print_table(
-                [], tq.headers, msg_before=msg_before, msg_after=msg_after
+                [], tq.headers, msg_before=msg_before
             )
 
     parser.add_argument(
@@ -135,7 +134,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
 
             TRUNCATE_LENGTH = max((theight // 2) - 3, 2) or consts.LS_TRUNCATE_LENGTH
 
-            table = []
+            table: list[list] = []
             tasks_list = taskq.tasks
             ids_list = []
 
@@ -344,8 +343,8 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
     def inner(taskq: TaskQueue, args: Namespace):
         table = []
         for id in args.ids:
-            taskq.find_or_fail(id)
-            task = taskq.remove_task(id)
+            task = taskq.find_or_fail(id)
+            taskq.remove_task(id)
 
             table.append(task.to_display_row())
 
@@ -627,7 +626,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
 
 def config(parser: ArgumentParser, root: ArgumentParser):
-    """Subcommand for working with aliases"""
+    """Subcommand for editing config entries"""
 
     def ls(sparser: ArgumentParser):
         """List config entries"""
@@ -816,7 +815,8 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
             headers = args.columns if args.columns else consts.CONSTRAINTS_HEADERS
 
             if args.header is True:
-                util.pretty_print_table([headers])
+                header_row = [headers]
+                util.pretty_print_table(header_row)
                 return
 
             table = []

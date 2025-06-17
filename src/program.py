@@ -1,9 +1,10 @@
 import os
 import globals
 import consts
+from argparse import ArgumentParser
 
 
-def runner(parser, argv):
+def runner(parser: ArgumentParser, argv: list[str]):
     argp = parser
 
     parsed = argp.parse_args(argv)
@@ -23,8 +24,8 @@ def runner(parser, argv):
         parsed.func(parsed)
 
 
-def runner_with_handling(parser, argv):
+def runner_with_handling(parser: ArgumentParser, argv: list[str]):
     try:
         runner(parser, argv)
     except AssertionError as e:
-        parser.error(e)
+        parser.error(str(e))

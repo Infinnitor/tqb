@@ -28,7 +28,7 @@ def program_argument_parser() -> argparse.ArgumentParser:
     return root
 
 
-def main(argv):
+def main(argv: list[str]):
     program.runner_with_handling(program_argument_parser(), argv[1:])
 
 

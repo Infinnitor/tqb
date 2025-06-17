@@ -1,8 +1,8 @@
 # BEGIN CONFIG
 Key,Value,Opt
-Alias,lshp,--path devqueue.csv ls --where Priority=High
-Alias,lsbck,--path devqueue.csv ls --all --where Status=Backlog
-Alias,priority,--path devqueue.csv update $0 Priority $1
+Alias,lshp,ls --where Priority=High
+Alias,lsbck,ls --all --where Status=Backlog
+Alias,priority,update $0 Priority $1
 # END CONFIG
 # BEGIN CONSTRAINTS
 HeaderName,Type,Variant,Default,ColWidth,Colours,Role,Autofill,Hide
@@ -87,7 +87,7 @@ Id,Task,Status,Priority,Area,Archived
 71,column cmd: output on subcommand success,Done,Low,Feature,True
 72,Scope creation of automated testing system with pytest,Done,Low,Testing,True
 73,Update all cmds to respect Hide constraint,Done,Low,Architecture,True
-74,Type hint all functions,In Progress,Medium,Release,False
+74,Type hint all functions,Done,Medium,Release,True
 75,ls cmd: --search flag,Done,Low,Feature,True
 76,Create colours.Indents enum,Done,Low,Frontend,True
 77,Review all tasks and assign projects,Done,Low,Management,True

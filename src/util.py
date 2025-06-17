@@ -17,11 +17,11 @@ def get_terminal_size() -> tuple[int, int]:
         return consts.FALLBACK_TERMINAL_SIZE
 
 
-def clr_surround_fore(txt, colour):
+def clr_surround_fore(txt: str, colour: str) -> str:
     return f"{colour}{txt}{Fore.RESET}"
 
 
-def star_symbol_surround(msg, width):
+def star_symbol_surround(msg: str, width: int):
     def stars(x):
         return " ".join([random.choice(consts.STAR_CHARACTER_CHOICE) for _ in range(x)])
 
@@ -36,7 +36,7 @@ def star_symbol_surround(msg, width):
     return fmt
 
 
-def find_visual_length_of_line(line):
+def find_visual_length_of_line(line: str):
     line_without_colours = functools.reduce(
         lambda acc, r: acc.replace(r, ""), Fore.__dict__.values(), line
     )
@@ -53,7 +53,7 @@ def pretty_print_table(
     indent_table="",
 ):
 
-    def truncate_table_width(text):
+    def truncate_table_width(text: str) -> str:
         lines = text.split("\n")
 
         twidth, theight = get_terminal_size()
@@ -79,7 +79,7 @@ def pretty_print_table(
 
         return "\n".join(truncated_lines)
 
-    def style_txt_process(text):
+    def style_txt_process(text: str) -> str:
         BORDERS = ["─", "┴", "┼", "┬", "├", "│", "┤", "|", "┘", "┐", "┌", "└"]
 
         match style:

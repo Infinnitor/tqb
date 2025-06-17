@@ -2,10 +2,10 @@ import consts
 from dataclasses import dataclass
 import fnmatch
 from colorama import Fore
-from typing import Self, Any
+from typing import Self, Any, Callable, Optional
 
 
-CONSTRAINT_MAP = {
+CONSTRAINT_MAP: dict[str, Callable[[str], Any]] = {
     "int": int,
     "bool": lambda x: x not in ("FALSE", "False", "false", "0", ""),
 }
@@ -17,23 +17,28 @@ class Constraint:
     Type: str
     Variant: str
     Default: str
-    ColWidth: int
+    ColWidth: Optional[int]
     Colours: str
     Role: str
     Autofill: bool
     Hide: bool
 
     @classmethod
-    def empty(cls, header_name: str):
+    def empty(cls, header_name: str) -> Self:
         return cls(
-            *[
-                header_name if k == "HeaderName" else ""
-                for k in consts.CONSTRAINTS_HEADERS
-            ]
+            HeaderName=header_name,
+            Type="",
+            Variant="",
+            Default="",
+            ColWidth=None,
+            Colours="",
+            Role="",
+            Autofill=False,
+            Hide=False
         )
 
     @classmethod
-    def kwargs(cls, **kwargs: dict[str, str]):
+    def kwargs(cls, **kwargs: Any) -> Self:
         for key in consts.CONSTRAINTS_HEADERS:
             if key not in kwargs:
                 kwargs[key] = ""
@@ -41,28 +46,29 @@ class Constraint:
         return cls(**kwargs)
 
     @classmethod
-    def deserialize(cls, row: list[str]) -> Self:
+    def deserialize(cls, row: list[Any]) -> Self:
         if row[1] and row[1] not in CONSTRAINT_MAP.keys():
             raise ValueError(f"Invalid constraint type '{row[1]}' for column {row[0]}")
 
         if row[4] and row[4].isnumeric():
             row[4] = int(row[4])
+        else:
+            row[4] = None
 
         row[7] = CONSTRAINT_MAP["bool"](row[7])
         row[8] = CONSTRAINT_MAP["bool"](row[8])
 
         return cls(*row)
 
-    # TODO: Make this more ironclad
-    def serialize(self):
+    def serialize(self) -> list[str]:
         row = []
         for header in consts.CONSTRAINTS_HEADERS:
             row.append(self.__dict__[header])
 
         return row
 
-    def apply_colour(self, value: Any):
-        def get_clr(name):
+    def apply_colour(self, value: Any) -> str:
+        def get_clr(name: str) -> str:
             if name.startswith("#"):
                 if len(name) != 7:
                     return Fore.RESET
@@ -91,10 +97,10 @@ class Constraint:
 
         return value
 
-    def apply_default(self, value: Any):
+    def apply_default(self, value: str) -> Any:
         return self.Default or value
 
-    def constrain_type(self, value: Any) -> Any:
+    def constrain_type(self, value: str) -> Any:
         if self.Type and CONSTRAINT_MAP.get(self.Type):
             try:
                 return CONSTRAINT_MAP[self.Type](value)
@@ -104,10 +110,10 @@ class Constraint:
                 )
         return value
 
-    def get_variant_constraints(self):
+    def get_variant_constraints(self) -> list[str]:
         return [""] + self.Variant.split("|")
 
-    def constrain_variant(self, value: Any) -> Any:
+    def constrain_variant(self, value: str) -> str:
         lvalue = str(value).lower()
 
         if self.Variant:

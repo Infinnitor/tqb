@@ -12,12 +12,12 @@ from config import Config
 @dataclass
 class Task:
     id: int
-    items: dict[str, str]
+    items: dict[str, Any]
     queue: "TaskQueue"
 
     @classmethod
-    def new_task(cls, description, queue):
-        items = {k: "" for k in queue.headers}
+    def new_task(cls, description: str, queue: "TaskQueue") -> Self:
+        items: dict[str, Any] = {k: "" for k in queue.headers}
         pkid = (max(int(task.id) for task in queue.tasks) + 1) if queue.tasks else 1
         items[queue.header_pk()] = pkid
         items[queue.header_desc()] = description
@@ -34,38 +34,41 @@ class Task:
 
             items[k] = value
 
-        return Task(id=pkid, items=items, queue=queue)
+        return cls(id=pkid, items=items, queue=queue)
 
-    def update_column(self, k, v):
-        k = self.queue.smart_header_match(k)
+    def update_column(self, k: str, v: str):
+        km = self.queue.smart_header_match(k)
+        if km is None:
+            raise AssertionError("no existing column {k}")
 
         value = v
-        constraint = self.queue.find_constraint_fallback(k)
+        constraint = self.queue.find_constraint_fallback(km)
 
         if value == "":
             value = constraint.apply_default(value)
 
         value = constraint.constrain_variant(value)
         value = constraint.constrain_type(value)
-        self.items[k] = value
+        self.items[km] = value
 
-    def geti(self, header: str):
+    def geti(self, header: str) -> Any:
         header_guess = self.queue.smart_header_match(header)
-        assert header_guess in self.items
+        assert header_guess and header_guess in self.items, f"column match failed for {header}"
         return self.items[header_guess]
 
     def seti(self, header: str, value: Any):
         header_guess = self.queue.smart_header_match(header)
-        assert header_guess in self.items
+        assert header_guess and header_guess in self.items, f"column match for {header}"
         self.items[header_guess] = value
 
     def matchi(self, header: str, cmp: str) -> bool:
         header_guess = self.queue.smart_header_match(header)
-        constraint = self.queue.find_constraint_fallback(header_guess)
+        assert header_guess and header_guess in self.items, f"column match for {header}"
 
+        constraint = self.queue.find_constraint_fallback(header_guess)
         item = self.geti(header_guess)
 
-        if constraint.ConstrainVariant:
+        if constraint.Variant:
             cmp = constraint.constrain_variant(cmp)
 
         if fnmatch.fnmatch(item.lower(), cmp.lower()):
@@ -73,12 +76,21 @@ class Task:
 
         return False
 
-    @classmethod
-    def deserialize(cls, row, headers, queue):
-        zipped = {k: v for k, v in zip(headers, row)}
-        return cls(zipped.get(queue.header_pk()), zipped, queue)
+    @staticmethod
+    def _get_pk(header: str, items: dict[str, Any]) -> int:
+        pk = items.get(header)
+        assert pk, f"fatal: PrimaryKey could not be found for Task {items}"
+        try:
+            return int(pk)
+        except ValueError:
+            raise AssertionError(f"fatal: PrimaryKey for Task {items} is not numeric")
 
-    def to_display_row(self, headers=None):
+    @classmethod
+    def deserialize(cls, row: list[Any], headers: list[str], queue: "TaskQueue") -> Self:
+        zipped = {k: v for k, v in zip(headers, row)}
+        return cls(cls._get_pk(queue.header_pk(), zipped), zipped, queue)
+
+    def to_display_row(self, headers: Optional[list[str]] = None) -> list[str]:
         headers = self.queue.get_display_headers() if headers is None else headers
         row = []
         for k in headers:
@@ -90,10 +102,10 @@ class Task:
 
         return row
 
-    def serialize(self):
+    def serialize(self) -> list[Any]:
         return [self.items.get(k) for k in self.queue.headers]
 
-    def is_archived(self):
+    def is_archived(self) -> bool:
         constraint = self.queue.find_constraint("Role", "Archiving")
         if not constraint:
             return False
@@ -110,7 +122,7 @@ class TaskQueue:
     config: Config
 
     @classmethod
-    def default(cls):
+    def default(cls) -> Self:
         headers = list(consts.DEFAULT_HEADERS)
         constraint_list = [
             Constraint.kwargs(
@@ -144,31 +156,36 @@ class TaskQueue:
         ]
 
         constraints = {c.HeaderName: c for c in constraint_list}
-        return cls(constraints=constraints, headers=headers, tasks=[], config=Config.empty())
+        return cls(
+            constraints=constraints, headers=headers, tasks=[], config=Config.empty()
+        )
 
     @classmethod
-    def from_headers(cls, headers):
+    def from_headers(cls, headers: list[str]) -> Self:
         constraints = {k: Constraint.empty(k) for k in headers}
-        tq = cls(constraints=constraints, headers=headers, tasks=[], config=Config.empty())
+        tq = cls(
+            constraints=constraints, headers=headers, tasks=[], config=Config.empty()
+        )
         return tq
 
-    def add_task(self, task):
+    def add_task(self, task: Task) -> Task:
         self.tasks.append(task)
         return task
 
-    def add_constraint(self, constraint):
+    def add_constraint(self, constraint: Constraint) -> Constraint:
         self.constraints[constraint.HeaderName] = constraint
+        return constraint
 
-    def find(self, id: int):
+    def find(self, id: int) -> Optional[Task]:
         return next((task for task in self.tasks if int(task.id) == id), None)
 
-    def find_or_fail(self, id: int):
+    def find_or_fail(self, id: int) -> Task:
         task = self.find(id)
         if not task:
             raise AssertionError(f"could not find task with id {id}")
         return task
 
-    def find_constraint(self, header, value=None):
+    def find_constraint(self, header: str, value: Optional[str] = None) -> Optional[Constraint]:
         if value is None:
             return self.constraints.get(header)
 
@@ -176,7 +193,9 @@ class TaskQueue:
             (c for c in self.constraints.values() if c.__dict__[header] == value), None
         )
 
-    def find_constraint_or_fail(self, header, value=None, msg=None):
+    def find_constraint_or_fail(
+        self, header: str, value: Optional[str] = None, msg=None
+    ) -> Constraint:
         constraint = self.find_constraint(header, value)
 
         if msg is None and value is None:
@@ -187,10 +206,10 @@ class TaskQueue:
         assert constraint is not None, msg
         return constraint
 
-    def find_constraint_fallback(self, header, value=None):
+    def find_constraint_fallback(self, header: str, value: Optional[str] = None) -> Constraint:
         return self.find_constraint(header, value) or Constraint.empty(header)
 
-    def remove_task(self, id: int) -> Task:
+    def remove_task(self, id: int) -> Optional[Task]:
         start_len = len(self.tasks)
         for idx, task in enumerate(self.tasks):
             if int(task.id) == id:
@@ -199,14 +218,14 @@ class TaskQueue:
                 return t
         return None
 
-    def header_pk(self):
+    def header_pk(self) -> str:
         return self.find_constraint_or_fail(
             "Role",
             "PrimaryKey",
             "could not find PrimaryKey column, create it with 'tqb constraint alter [column] Role=PrimaryKey'",
         ).HeaderName
 
-    def header_desc(self):
+    def header_desc(self) -> str:
         query = self.find_constraint("Role", "Description")
         return (
             query.HeaderName
@@ -214,14 +233,14 @@ class TaskQueue:
             else next((h for h in self.headers if h != self.header_pk()))
         )
 
-    def header_archive(self):
+    def header_archive(self) -> str:
         return self.find_constraint_or_fail(
             "Role",
             "Archiving",
             "could not find Archiving column, create it with 'tqb constraint alter [column] Role=Archiving'",
         ).HeaderName
 
-    def header_status(self):
+    def header_status(self) -> str:
         return self.find_constraint_or_fail(
             "Role",
             "Status",
@@ -231,7 +250,7 @@ class TaskQueue:
     def get_display_headers(self) -> list[str]:
         return [h for h in self.headers if not self.find_constraint_fallback(h).Hide]
 
-    def get_constraints_sorted_by_headers(self, headers=None):
+    def get_constraints_sorted_by_headers(self, headers: Optional[list[str]] = None) -> list[Constraint]:
         headers = headers or self.headers
         filtered_constraints = [
             c for c in self.constraints.values() if c.HeaderName in headers
@@ -241,15 +260,16 @@ class TaskQueue:
         )
         return csorted
 
-    def get_column_widths(self, headers=None):
+    def get_column_widths(self, headers: Optional[list[str]] = None) -> list[int | None]:
         return [
-            c.ColWidth or None
+            c.ColWidth
             for c in self.get_constraints_sorted_by_headers(
                 headers=headers or self.get_display_headers()
             )
         ]
 
-    def smart_header_match(self, name: str):
+    def smart_header_match(self, name: str) -> Optional[str]:
         for header in self.headers:
             if name.lower() == header.lower():
                 return header
+        return None
