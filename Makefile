@@ -19,7 +19,9 @@ release:
 
 install:
 	make release
-	sudo rm -rf /opt/tqb/
-	sudo rm /usr/bin/tqb
 	sudo cp build /opt/tqb -r
 	sudo ln -s /opt/tqb/tqb /usr/bin/tqb
+
+uninstall:
+	sudo rm -rf /opt/tqb/
+	sudo rm /usr/bin/tqb

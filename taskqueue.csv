@@ -113,4 +113,4 @@ Id,Task,Status,Priority,Area,Archived
 97,Create program module for programatically executing based on args,Done,Low,Architecture,True
 98,Review CONSTRAINTS_HEADERS names,Done,Low,Release,True
 99,Create runner.c program,Done,High,Release,True
-100,Prepare for release,Not Started,Low,,False
+100,Prepare for release,Not Started,Low,Release,False
