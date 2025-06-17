@@ -152,7 +152,6 @@ class TaskQueue:
                 Default="Not Started",
             ),
             Constraint.kwargs(HeaderName="Task", Role="Description"),
-            Constraint.kwargs(HeaderName="Assignee"),
         ]
 
         constraints = {c.HeaderName: c for c in constraint_list}
