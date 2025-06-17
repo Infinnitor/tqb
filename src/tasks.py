@@ -143,6 +143,7 @@ class TaskQueue:
                 Colours="high=RED|medium=YELLOW|low=BLUE",
                 Variant="High|Medium|Low",
                 Default="Low",
+                Autofill=True
             ),
             Constraint.kwargs(
                 HeaderName="Status",
@@ -150,6 +151,7 @@ class TaskQueue:
                 Colours="not started=GREY|in progress=YELLOW|done=GREEN",
                 Role="Status",
                 Default="Not Started",
+                Autofill=True
             ),
             Constraint.kwargs(HeaderName="Task", Role="Description"),
         ]
