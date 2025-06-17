@@ -39,7 +39,7 @@ def tqb_serialize(func: Callable):
 
 
 def create(parser: ArgumentParser, root: ArgumentParser):
-    """Create a new task queue with default options"""
+    """create a new task queue with default options"""
 
     def inner(args: Namespace):
         headers = args.headers.copy()
@@ -78,7 +78,7 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
 
 def help(parser: ArgumentParser, root: ArgumentParser):
-    """Print the program help text"""
+    """print the program help text"""
 
     def print_help():
         txt = logo.LOGO
@@ -147,7 +147,7 @@ def help(parser: ArgumentParser, root: ArgumentParser):
 
 
 def ls(parser: ArgumentParser, root: ArgumentParser):
-    """Display the task queue"""
+    """display the task queue"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -292,7 +292,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
 
 
 def add(parser: ArgumentParser, root: ArgumentParser):
-    """Add a task with [description] to the task queue"""
+    """add a task with [description] to the task queue"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -318,7 +318,7 @@ def add(parser: ArgumentParser, root: ArgumentParser):
 
 
 def show(parser: ArgumentParser, root: ArgumentParser):
-    """Find a task by id and display it"""
+    """find a task by id and display it"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -339,7 +339,7 @@ def show(parser: ArgumentParser, root: ArgumentParser):
 
 
 def update(parser: ArgumentParser, root: ArgumentParser):
-    """Set a task property to a new value"""
+    """set a task property to a new value"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -374,7 +374,7 @@ def update(parser: ArgumentParser, root: ArgumentParser):
 
 
 def remove(parser: ArgumentParser, root: ArgumentParser):
-    """Remove a task by id"""
+    """remove a task by id"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -403,7 +403,7 @@ def remove(parser: ArgumentParser, root: ArgumentParser):
 
 
 def mark(parser: ArgumentParser, root: ArgumentParser):
-    """Set a task Status"""
+    """set a task Status"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -446,7 +446,7 @@ def mark(parser: ArgumentParser, root: ArgumentParser):
 
 
 def archive(parser: ArgumentParser, root: ArgumentParser):
-    """Archive (hide) tasks"""
+    """archive (hide) tasks"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -479,7 +479,7 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
 
 
 def alias(parser: ArgumentParser, root: ArgumentParser):
-    """Use an alias defined with config"""
+    """use an alias defined with config"""
 
     @tqb_serialize
     def inner(taskq: TaskQueue, args: Namespace):
@@ -522,9 +522,10 @@ def alias(parser: ArgumentParser, root: ArgumentParser):
 
 
 def column(parser: ArgumentParser, root: ArgumentParser):
-    """Subcommand for adding, moving, renaming and removing columns"""
+    """subcommand for adding, moving, renaming and removing columns"""
 
     def add(sparser: ArgumentParser):
+        """add column"""
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
@@ -548,6 +549,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def move(sparser: ArgumentParser):
+        """move column"""
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
@@ -573,6 +575,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def rename(sparser: ArgumentParser):
+        """rename column"""
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
             old_name = args.target
@@ -608,7 +611,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def remove(sparser: ArgumentParser):
-        """Remove column"""
+        """remove column"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -644,10 +647,10 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
 
 def config(parser: ArgumentParser, root: ArgumentParser):
-    """Subcommand for editing config entries"""
+    """subcommand for editing config entries"""
 
     def ls(sparser: ArgumentParser):
-        """List config entries"""
+        """list config entries"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -663,7 +666,7 @@ def config(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def add(sparser: ArgumentParser):
-        """Add config entry"""
+        """add config entry"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -689,7 +692,7 @@ def config(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def remove(sparser: ArgumentParser):
-        """Add config entry"""
+        """remove config entry by Key and Value"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -719,10 +722,10 @@ def config(parser: ArgumentParser, root: ArgumentParser):
 
 
 def constraint(parser: ArgumentParser, root: ArgumentParser):
-    """Subcommand for working with constraints"""
+    """subcommand for working with constraints"""
 
     def add(sparser: ArgumentParser):
-        """Add constraint"""
+        """add constraint"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -745,7 +748,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def alter(sparser: ArgumentParser):
-        """Alter existing constraint"""
+        """alter existing constraint"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -770,7 +773,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def append(sparser: ArgumentParser):
-        """Add additional value to group constraints"""
+        """add additional value to group constraints"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -803,7 +806,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def remove(sparser: ArgumentParser):
-        """Remove constraint"""
+        """remove constraint"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -826,7 +829,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def ls(sparser: ArgumentParser):
-        """Remove constraint"""
+        """list constraints"""
 
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
@@ -851,7 +854,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
         return inner
 
     def blueprint(sparser: ArgumentParser):
-        """Dump constraint column and config information of taskqueue to STDOUT"""
+        """dump constraint column and config information of taskqueue to STDOUT"""
 
         def inner(args: Namespace):
             with open(args.path, "r") as fp:
@@ -891,6 +894,5 @@ COMMANDS = [
     constraint,
     alias,
     config,
-    # blueprint,
     help,
 ]
