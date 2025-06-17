@@ -14,10 +14,10 @@ def runner(parser, argv):
         os.system("clear")
 
     if parsed.help:
-        parsed = argp.parse_args(argv[1:] + ["help"])
+        parsed = argp.parse_args(argv + ["help"])
         parsed.func(parsed)
     elif hasattr(parsed, "func"):
         parsed.func(parsed)
     else:
-        parsed = argp.parse_args(argv[1:] + [consts.DEFAULT_SUBCOMMAND])
+        parsed = argp.parse_args(argv + [consts.DEFAULT_SUBCOMMAND])
         parsed.func(parsed)

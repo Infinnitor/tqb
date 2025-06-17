@@ -26,7 +26,8 @@ def setup_teardown(func):
             if capture:
                 with StdoutCapture() as output:
                     program.runner(program_argument_parser(), args)
-                    return output
+
+                return output.as_string()
             else:
                 program.runner(program_argument_parser(), args)
 
@@ -61,3 +62,6 @@ class StdoutCapture(list):
         self.extend(self._stringio.getvalue().splitlines())
         del self._stringio    # free up some memory
         sys.stdout = self._stdout
+
+    def as_string(self):
+        return "\n".join(iter(self))

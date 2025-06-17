@@ -191,7 +191,7 @@ def ls(parser: ArgumentParser, root: ArgumentParser):
                         f"output truncated to {TRUNCATE_LENGTH} of {TRUNCATE_LENGTH + num_truncated_tasks} entries"
                     ]
                     if globals.LS_OUTPUT_TRUNCATED
-                    else [f"{len(table)} tasks"]
+                    else [f"{len(table)} tasks"] if table else ["no tasks in queue ^^"]
                 )
 
                 util.pretty_print_table(
@@ -414,7 +414,7 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
         table = []
         for id in args.ids:
             task = taskq.find_or_fail(id)
-            task.update_column(archive_col, str(args.undo))
+            task.update_column(archive_col, str(args.unarchive))
             table.append(task.to_display_row())
 
         if not globals.QUIET_OPTION_SET:
@@ -426,13 +426,13 @@ def archive(parser: ArgumentParser, root: ArgumentParser):
                 ],
                 indent_table=(
                     colours.Indents.ARCHIVE
-                    if args.undo
+                    if args.unarchive
                     else colours.Indents.ARCHIVE_UNDO
                 ),
             )
 
     parser.add_argument("ids", nargs="+", type=int, help="ids of task to archive")
-    parser.add_argument("-u", "--undo", action="store_false", help="undo archive")
+    parser.add_argument("-u", "--unarchive", action="store_false", help="unarchive")
 
     return inner
 
