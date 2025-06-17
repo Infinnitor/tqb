@@ -14,6 +14,7 @@ import consts
 import parsing
 import colours
 import util
+import logo
 from tasks import Task, TaskQueue
 from constraints import Constraint
 from config import Config, ConfigPair
@@ -76,29 +77,28 @@ def help(parser: ArgumentParser, root: ArgumentParser):
     """Print the program help text"""
 
     def inner(args: Namespace):
-        with open("logo-clr.txt") as fp:
-            txt = fp.read()
+        txt = logo.LOGO
 
-            colours = [
-                Fore.GREEN,
-                Fore.MAGENTA,
-                Fore.RED,
-                Fore.YELLOW,
-                Fore.BLUE,
-                Fore.CYAN,
-            ]
+        colours = [
+            Fore.GREEN,
+            Fore.MAGENTA,
+            Fore.RED,
+            Fore.YELLOW,
+            Fore.BLUE,
+            Fore.CYAN,
+        ]
 
-            clr1, clr2, clr3 = (
-                colours.pop(random.randint(0, len(colours) - 1)),
-                colours.pop(random.randint(0, len(colours) - 1)),
-                colours.pop(random.randint(0, len(colours) - 1)),
-            )
+        clr1, clr2, clr3 = (
+            colours.pop(random.randint(0, len(colours) - 1)),
+            colours.pop(random.randint(0, len(colours) - 1)),
+            colours.pop(random.randint(0, len(colours) - 1)),
+        )
 
-            txt = txt.replace("<CLR1>", clr1)
-            txt = txt.replace("<CLR2>", clr2)
-            txt = txt.replace("<CLR3>", clr3)
+        txt = txt.replace("<CLR1>", clr1)
+        txt = txt.replace("<CLR2>", clr2)
+        txt = txt.replace("<CLR3>", clr3)
 
-            print(txt + Fore.RESET)
+        print(txt + Fore.RESET)
 
         root.print_help()
 
