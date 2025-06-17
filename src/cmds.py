@@ -25,7 +25,11 @@ from colorama import Fore
 
 def tqb_serialize(func: Callable):
     def inner(args: Namespace):
-        taskq = parsing.deserialize(args.path)
+        try:
+            taskq = parsing.deserialize(args.path)
+        except FileNotFoundError:
+            raise AssertionError(f"taskqueue not found '{args.path}'")
+
         globals.USE_LESS_FOR_OUTPUT = args.less
         globals.QUIET_OPTION_SET = bool(taskq.config.get_value("GlobalQuiet", False))
 
@@ -43,6 +47,8 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
         msg_before = []
         msg_after = []
+
+        assert not os.path.exists(args.path), "taskqueue already exists at specified path"
 
         if not headers:
             tq = TaskQueue.default()

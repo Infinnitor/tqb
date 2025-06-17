@@ -9,16 +9,17 @@ tests:
 
 
 release:
-	rm -rf build/*
+	# rm -rf build/*
 	mkdir -p build
 	gcc runner.c -o build/tqb
 	cp src/ build/ -r
-	cp logo-clr.txt build/
 	python3 -m venv build/venv
-	./build/venv/bin/pip install -r requirements.txt
+	./build/venv/bin/pip install -r requirements.txt --quiet
 
 
 install:
 	make release
+	sudo rm -rf /opt/tqb/
+	sudo rm /usr/bin/tqb
 	sudo cp build /opt/tqb -r
 	sudo ln -s /opt/tqb/tqb /usr/bin/tqb

@@ -45,7 +45,7 @@ Id,Task,Status,Priority,Area,Archived
 29,Status messages in pretty_print_table(),Done,Low,Frontend,True
 30,BUG: Account for status msg len discrepancy,Backlog,Low,Bug Queue,True
 31,BUG: Mangled colours on grid borders when maxcolumns is set,Backlog,Low,Bug Queue,True
-32,Create makefile / install script,In Progress,Medium,Release,False
+32,Create makefile / install script,Done,Medium,Release,True
 33,Update strings refering to taskq,Done,Low,Frontend,True
 34,mark cmd: add --archive flag,Done,Low,Feature,True
 35,Add ^_^,Done,Low,^_^,True
@@ -112,4 +112,4 @@ Id,Task,Status,Priority,Area,Archived
 96,Write CRUD feature tests,Done,Low,Testing,True
 97,Create program module for programatically executing based on args,Done,Low,Architecture,True
 98,Review CONSTRAINTS_HEADERS names,Not Started,Low,Release,False
-99,Create runner.c program,In Progress,High,Release,False
+99,Create runner.c program,Done,High,Release,True
