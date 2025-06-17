@@ -46,7 +46,9 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
         msg_before = []
 
-        assert not os.path.exists(args.path), "taskqueue already exists at specified path"
+        assert not os.path.exists(
+            args.path
+        ), "taskqueue already exists at specified path"
 
         if not headers:
             tq = TaskQueue.default()
@@ -67,9 +69,7 @@ def create(parser: ArgumentParser, root: ArgumentParser):
         parsing.serialize(args.path, tq)
 
         if not globals.QUIET_OPTION_SET:
-            util.pretty_print_table(
-                [], tq.headers, msg_before=msg_before
-            )
+            util.pretty_print_table([], tq.headers, msg_before=msg_before)
 
     parser.add_argument(
         "headers", nargs="*", help="headers to include in the new taskqueue"
@@ -80,7 +80,7 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 def help(parser: ArgumentParser, root: ArgumentParser):
     """Print the program help text"""
 
-    def inner(args: Namespace):
+    def print_help():
         txt = logo.LOGO
 
         colours = [
@@ -105,6 +105,43 @@ def help(parser: ArgumentParser, root: ArgumentParser):
         print(txt + Fore.RESET)
 
         root.print_help()
+
+    def print_examples():
+        EXAMPLES_QUICKSTART = {
+            "create a new taskqueue": "tqb create",
+            "add a task": "tqb add 'example task'",
+            "list tasks": "tqb ls",
+            "list tasks without truncating table": "tqb ls -nt",
+            "mark task 1 as In Progress": "tqb mark 1 'In Progress'",
+            "mark a task as Done (with autocomplete)": "tqb mark 1 d",
+            "mark multiple tasks as Backlog and archive it": "tqb mark 1 2 backlog --archive",
+            "archive multiple tasks": "tqb archive 1 2",
+            "unarchive multiple tasks": "tqb archive 1 2 --unarchive",
+            "update task priority": "tqb update 1 Priority High",
+            "list tasks sorted by priority": "tqb ls --sort Priority",
+            "list tasks incl archive": "tqb ls --all",
+            "list tasks in progress": "tqb ls --where Status='In Progress'",
+            "list completed tasks incl archive": "tqb ls --where status=d --all",
+            "search entire taskqueue for tasks mentioning 'BUG'": "tqb ls --search BUG",
+        }
+
+        table = [[example, desc] for desc, example in EXAMPLES_QUICKSTART.items()]
+        util.pretty_print_table(
+            table=table,
+            headers=["Command", "Description"],
+            msg_before=["EXAMPLE USAGE ^v^"],
+            indent_table=colours.Indents.HELP_EXAMPLES,
+        )
+
+    def inner(args: Namespace):
+        if args.examples:
+            print_examples()
+        else:
+            print_help()
+
+    parser.add_argument(
+        "--examples", action="store_true", help="Display example usage of program"
+    )
 
     return inner
 
@@ -484,25 +521,6 @@ def alias(parser: ArgumentParser, root: ArgumentParser):
     return inner
 
 
-def blueprint(parser: ArgumentParser, root: ArgumentParser):
-    """Dump constraint and header information of taskqueue to STDOUT"""
-
-    def inner(args: Namespace):
-        with open(args.path, "r") as fp:
-            lines = fp.readlines()
-
-        it = iter(lines)
-        blueprint = list(
-            itertools.takewhile(lambda x: not x.startswith(consts.CONSTRAINTS_END), it)
-        )
-        blueprint.append(consts.CONSTRAINTS_END + "\n")
-        blueprint.append(next(it))
-
-        print("".join(blueprint))
-
-    return inner
-
-
 def column(parser: ArgumentParser, root: ArgumentParser):
     """Subcommand for adding, moving, renaming and removing columns"""
 
@@ -832,9 +850,29 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
 
         return inner
 
+    def blueprint(sparser: ArgumentParser):
+        """Dump constraint column and config information of taskqueue to STDOUT"""
+
+        def inner(args: Namespace):
+            with open(args.path, "r") as fp:
+                lines = fp.readlines()
+
+            it = iter(lines)
+            blueprint = list(
+                itertools.takewhile(
+                    lambda x: not x.startswith(consts.CONSTRAINTS_END), it
+                )
+            )
+            blueprint.append(consts.CONSTRAINTS_END + "\n")
+            blueprint.append(next(it))
+
+            print("".join(blueprint))
+
+        return inner
+
     subcmd = parser.add_subparsers(required=True, help="constraint subcommands")
 
-    for cmd_factory in [add, alter, remove, ls, append]:
+    for cmd_factory in [add, alter, remove, ls, append, blueprint]:
         parser = subcmd.add_parser(cmd_factory.__name__, help=cmd_factory.__doc__)
         func = cmd_factory(parser)
         parser.set_defaults(func=func)
@@ -853,6 +891,6 @@ COMMANDS = [
     constraint,
     alias,
     config,
-    blueprint,
+    # blueprint,
     help,
 ]
