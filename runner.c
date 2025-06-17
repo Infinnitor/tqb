@@ -5,8 +5,9 @@
 #include <sys/param.h>
 
 
-#define ENDPOINT "venv/bin/python3 src/main.py"
-#define DEFAULT_BUF 0xff
+#define ENDPOINT "venv/bin/python3"
+#define FILEPATH "src/main.py"
+#define DEFAULT_BUF 0x100
 
 
 char* trim_ws(char* src) {
@@ -66,22 +67,31 @@ char* dir(const char* path) {
 
 int main(int argc, char** argv) {
 	char* exebuf = malloc(DEFAULT_BUF);
+	char* exedir = malloc(DEFAULT_BUF);
 	char* python3buf = malloc(DEFAULT_BUF);
-	size_t exelen = sizeof(exebuf);
 
 	int pathlen = MIN(readlink("/proc/self/exe", exebuf, DEFAULT_BUF), DEFAULT_BUF - 1);
 	if (pathlen >= 0) {
 		exebuf[pathlen] = '\0';
 	}
 
-	strcpy(python3buf, exebuf);
-	strcpy(python3buf, dir(trim_ws(exebuf)));
-	printf("%s\n", python3buf);
+	strcpy(exedir, exebuf);
+	char* ptr = dir(trim_ws(exebuf));
+	strcpy(exedir, ptr);
+	/* printf("%s|\n", exedir); */
 
-	size_t p3bufsize = strlen(python3buf) + strlen(ENDPOINT) + 1;
+	exedir = realloc(exedir, strlen(exedir));
+
+	strcpy(python3buf, exedir);
+
+	size_t p3bufsize = strlen(python3buf) + strlen(ENDPOINT) + strlen(FILEPATH) + 3;
 	python3buf = realloc(python3buf, p3bufsize);
 	strcat(python3buf, "/");
 	strcat(python3buf, ENDPOINT);
+	strcat(python3buf, " ");
+	strcat(python3buf, exedir);
+	strcat(python3buf, "/");
+	strcat(python3buf, FILEPATH);
 
 	char* command = malloc(p3bufsize);
 	strcpy(command, python3buf);

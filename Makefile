@@ -1,9 +1,6 @@
 runner:
 	mkdir -p build/cache/
-	@if [ "$(shell diff -q runner.c build/cache/runner.c)" != "" ]; then\
-		echo "gcc runner.c -o build.runner";\
-		gcc runner.c -o build/runner;\
-	fi
+	gcc runner.c -o build/runner;\
 	cp runner.c build/cache/
 	# ./build/runner ls --where Priority=High
 
@@ -12,9 +9,16 @@ tests:
 
 
 release:
+	rm -rf build/*
 	mkdir -p build
-	gcc runner.c -o build/runner
+	gcc runner.c -o build/tqb
 	cp src/ build/ -r
-	cp logo-clr.txt
+	cp logo-clr.txt build/
 	python3 -m venv build/venv
 	./build/venv/bin/pip install -r requirements.txt
+
+
+install:
+	make release
+	sudo cp build /opt/tqb -r
+	sudo ln -s /opt/tqb/tqb /usr/bin/tqb
