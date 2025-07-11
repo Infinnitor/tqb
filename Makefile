@@ -1,3 +1,8 @@
+env:
+	python3 -m venv venv
+	./venv/bin/pip install -r requirements.txt
+
+
 runner:
 	mkdir -p build/cache/
 	gcc runner.c -o build/runner;\
