@@ -22,6 +22,10 @@ release:
 	./build/venv/bin/pip install -r requirements.txt --quiet
 
 
+clean:
+	rm -rf build/*
+
+
 install:
 	make release
 	sudo cp build /opt/tqb -r

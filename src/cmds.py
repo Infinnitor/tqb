@@ -18,19 +18,22 @@ import logo
 from tasks import Task, TaskQueue
 from constraints import Constraint
 from config import Config, ConfigPair
+import blueprints
 
 import pyperclip
 from colorama import Fore
 
 
-def tqb_serialize(func: Callable):
+def tqb_serialize(func: Callable[TaskQueue, Namespace]):
     def inner(args: Namespace):
         try:
             taskq = parsing.deserialize(args.path)
         except FileNotFoundError:
             raise AssertionError(f"taskqueue not found at path '{args.path}'")
 
-        globals.QUIET_OPTION_SET = bool(taskq.config.get_value("GlobalQuiet", globals.QUIET_OPTION_SET))
+        globals.QUIET_OPTION_SET = bool(
+            taskq.config.get_value("GlobalQuiet", globals.QUIET_OPTION_SET)
+        )
 
         func(taskq, args)
         parsing.serialize(args.path, taskq)
@@ -44,35 +47,43 @@ def create(parser: ArgumentParser, root: ArgumentParser):
     def inner(args: Namespace):
         headers = args.headers.copy()
 
-        msg_before = []
+        msg_before = ""
 
         assert not os.path.exists(
             args.path
         ), "taskqueue already exists at specified path"
 
-        if not headers:
-            tq = TaskQueue.default()
+        assert (
+            args.blueprint in blueprints.BLUEPRINT_MAP
+        ), f"{args.blueprint} is not an accepted argument for blueprint"
 
-            header_str = ", ".join(consts.DEFAULT_HEADERS)
-            msg_before.append(
-                f"creating taskqueue at '{args.path}' with default headers ({header_str})"
-            )
+        if not headers:
+            tq = blueprints.BLUEPRINT_MAP[args.blueprint]()
+
+            header_str = ", ".join(tq.headers)
+            msg_before = f"creating taskqueue at '{args.path}' with default headers ({header_str})"
 
         else:
             tq = TaskQueue.from_headers(headers)
 
             header_str = ", ".join(headers)
-            msg_before.append(
+            msg_before = (
                 f"creating taskqueue at {args.path} with headers ({header_str})"
             )
 
         parsing.serialize(args.path, tq)
 
         if not globals.QUIET_OPTION_SET:
-            util.pretty_print_table([], tq.headers, msg_before=msg_before)
+            print(util.clr_surround_fore(msg_before, colours.Fore.CYAN))
 
     parser.add_argument(
         "headers", nargs="*", help="headers to include in the new taskqueue"
+    )
+
+    parser.add_argument(
+        "--blueprint",
+        default="default",
+        help=f"template to use to build the taskqueue (accepted options: {', '.join(blueprints.BLUEPRINT_MAP.keys())})",
     )
     return inner
 
@@ -526,6 +537,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
     def add(sparser: ArgumentParser):
         """add column"""
+
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
@@ -550,6 +562,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
     def move(sparser: ArgumentParser):
         """move column"""
+
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
             target = args.target
@@ -576,6 +589,7 @@ def column(parser: ArgumentParser, root: ArgumentParser):
 
     def rename(sparser: ArgumentParser):
         """rename column"""
+
         @tqb_serialize
         def inner(taskq: TaskQueue, args: Namespace):
             old_name = args.target

@@ -112,6 +112,7 @@ Id,Task,Status,Complexity,Area,Archived
 98,Review CONSTRAINTS_HEADERS names,Done,Low,Release,True
 99,Create runner.c program,Done,High,Release,True
 100,Prepare for release,Done,Low,Release,True
-101,Write tests for all program functionalirt,Not Started,Low,Testing,False
-102,create cmd: Different blueprints to choose from,Not Started,Medium,Feature,False
+101,Write tests for all program functionality,Not Started,Low,Testing,False
+102,create cmd: Different blueprints to choose from,Done,Medium,Feature,True
 103,add -p alias for --path,Not Started,Low,Feature,False
+104,Default for --path via environment variable,Not Started,Low,,False
