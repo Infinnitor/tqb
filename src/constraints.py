@@ -22,6 +22,7 @@ class Constraint:
     Role: str
     Autofill: bool
     Hide: bool
+    AutoHeader: bool
 
     @classmethod
     def empty(cls, header_name: str) -> Self:
@@ -34,7 +35,8 @@ class Constraint:
             Colours="",
             Role="",
             Autofill=False,
-            Hide=False
+            Hide=False,
+            AutoHeader=False
         )
 
     @classmethod
@@ -57,6 +59,7 @@ class Constraint:
 
         row[7] = CONSTRAINT_MAP["bool"](row[7])
         row[8] = CONSTRAINT_MAP["bool"](row[8])
+        row[9] = CONSTRAINT_MAP["bool"](row[9])
 
         return cls(*row)
 

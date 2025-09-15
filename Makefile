@@ -10,7 +10,7 @@ runner:
 	# ./build/runner ls --where Priority=High
 
 tests:
-	pytest -v --no-header test/
+	./venv/bin/pytest -v --no-header test/
 
 
 release:
@@ -31,6 +31,7 @@ install:
 	make release
 	sudo cp build /opt/tqb -r
 	sudo ln -s /opt/tqb/runner.sh /usr/bin/tqb
+
 
 uninstall:
 	sudo rm -rf /opt/tqb/

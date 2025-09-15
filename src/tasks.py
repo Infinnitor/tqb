@@ -270,7 +270,13 @@ class TaskQueue:
         ]
 
     def smart_header_match(self, name: str) -> Optional[str]:
+        name = name.lower()
+
         for header in self.headers:
-            if name.lower() == header.lower():
+            if name == header.lower():
                 return header
+            constraint = self.find_constraint(header)
+            if constraint.AutoHeader and header.lower().startswith(name):
+                return header
+
         return None
