@@ -115,4 +115,5 @@ Id,Task,Status,Complexity,Area,Archived
 101,Write tests for all program functionality,Not Started,Low,Testing,False
 102,create cmd: Different blueprints to choose from,Done,Medium,Feature,True
 103,add -p alias for --path,Not Started,Low,Feature,False
-104,Default for --path via environment variable,Not Started,Low,,False
+104,Default for --path via environment variable,Not Started,Low,Feature,False
+105,BUG: runner.c fails on some inputs,Not Started,Low,Bug Queue,False

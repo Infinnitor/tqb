@@ -17,6 +17,7 @@ release:
 	# rm -rf build/*
 	mkdir -p build
 	gcc runner.c -o build/tqb
+	cp runner.sh build/
 	cp src/ build/ -r
 	python3 -m venv build/venv
 	./build/venv/bin/pip install -r requirements.txt --quiet
@@ -29,7 +30,7 @@ clean:
 install:
 	make release
 	sudo cp build /opt/tqb -r
-	sudo ln -s /opt/tqb/tqb /usr/bin/tqb
+	sudo ln -s /opt/tqb/runner.sh /usr/bin/tqb
 
 uninstall:
 	sudo rm -rf /opt/tqb/

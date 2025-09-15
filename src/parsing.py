@@ -7,7 +7,7 @@ import consts
 
 
 def serialize(path: str, tq: TaskQueue):
-    with open(path, "w+") as fp:
+    with open(path, "w+", encoding="utf-8") as fp:
         writer = csv.writer(fp)
         writer.writerow([consts.CONFIG_BEGIN])
         writer.writerow(consts.CONFIG_HEADERS)
