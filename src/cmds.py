@@ -49,9 +49,11 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
         msg_before = ""
 
-        assert not os.path.exists(
-            args.path
-        ), "taskqueue already exists at specified path"
+        assert not os.path.exists(args.path), "file already exists at specified path"
+
+        assert (
+            args.blueprint is not None
+        ), f"value for --blueprint must be one of {','.join(blueprints.BLUEPRINT_MAP.keys())}"
 
         assert (
             args.blueprint in blueprints.BLUEPRINT_MAP
@@ -82,6 +84,7 @@ def create(parser: ArgumentParser, root: ArgumentParser):
 
     parser.add_argument(
         "--blueprint",
+        nargs="?",
         default="default",
         help=f"template to use to build the taskqueue (accepted options: {', '.join(blueprints.BLUEPRINT_MAP.keys())})",
     )
@@ -117,26 +120,60 @@ def help(parser: ArgumentParser, root: ArgumentParser):
 
         root.print_help()
 
-    def print_examples():
-        EXAMPLES_QUICKSTART = {
+    def print_examples(group: str):
+        EXAMPLES_BASIC = {
             "create a new taskqueue": "tqb create",
             "add a task": "tqb add 'example task'",
             "list tasks": "tqb ls",
             "list tasks without truncating table": "tqb ls -nt",
             "mark task 1 as In Progress": "tqb mark 1 'In Progress'",
             "mark a task as Done (with autocomplete)": "tqb mark 1 d",
-            "mark multiple tasks as Backlog and archive it": "tqb mark 1 2 backlog --archive",
+            "mark multiple tasks as Backlog and archive them": "tqb mark 1 2 backlog --archive",
             "archive multiple tasks": "tqb archive 1 2",
             "unarchive multiple tasks": "tqb archive 1 2 --unarchive",
             "update task priority": "tqb update 1 Priority High",
             "list tasks sorted by priority": "tqb ls --sort Priority",
-            "list tasks incl archive": "tqb ls --all",
+            "list tasks including archived": "tqb ls --all",
             "list tasks in progress": "tqb ls --where Status='In Progress'",
-            "list completed tasks incl archive": "tqb ls --where status=d --all",
+            "list completed tasks including archived": "tqb ls --where status=d --all",
             "search entire taskqueue for tasks mentioning 'BUG'": "tqb ls --search BUG",
         }
 
-        table = [[example, desc] for desc, example in EXAMPLES_QUICKSTART.items()]
+        EXAMPLES_QUICKSTART = {
+            "create a new taskqueue from default template": "tqb create --blueprint dev",
+            "add a task to the queue with columns set": "tqb add 'new feature' Area=Feature Complexity=Low",
+            "list tasks (truncated to screen height if list is too long)": "tqb ls",
+            "list unstarted tasks with names starting with BUG": "tqb ls -nt --whereor s=n task='BUG*'",
+            "mark task with id 1 as done and archive it": "tqb mark 1 d -a",
+            "update a task to high complexity with autocomplete": "tqb update 1 comp h",
+            "remove a task from the queue in quiet mode": "tqb -q remove 1",
+        }
+
+        EXAMPLES_CONSTRAINTS = {
+            "list constraints interactively using less": "tqb --less constraint ls",
+            "add a constraint for column named Example and limit variants": "tqb constraint add Example Variant='Yes|No'",
+            "append additional variants to Example constraint": "tqb constraint append Example Variant Maybe",
+            "remove Example constraint": "tqb constraint remove Example",
+            # TODO: document constraint for colours
+        }
+
+        EXAMPLES_CONFIG = {
+            "listing current config options": "tqb config ls",
+            "setting the -q option for all commands": "tqb config add GlobalQuiet True",
+            "removing the GlobalQuiet config option": "tqb config remove GlobalQuiet False",
+            "adding an alias for listing backlog tasks": "tqb config add Alias lsbak 'ls --all --where Status=Backlog'",
+            "using the alias": "tqb alias lsbak",
+            "removing the alias": "tqb config remove Alias lsbak",
+        }
+
+        group_map = {
+            "usage": EXAMPLES_BASIC,
+            "quickstart": EXAMPLES_QUICKSTART,
+            "constraint": EXAMPLES_CONSTRAINTS,
+            "config": EXAMPLES_CONFIG,
+        }
+
+        table = [[example, desc] for desc, example in group_map[group].items()]
         util.pretty_print_table(
             table=table,
             headers=["Command", "Description"],
@@ -145,13 +182,22 @@ def help(parser: ArgumentParser, root: ArgumentParser):
         )
 
     def inner(args: Namespace):
+        EXAMPLES_GROUPS = ("usage", "quickstart", "constraint", "config")
+
         if args.examples:
-            print_examples()
+            group = args.examples
+            assert (
+                group in EXAMPLES_GROUPS
+            ), f"--examples must be one of {','.join(EXAMPLES_GROUPS)}"
+            print_examples(group)
         else:
             print_help()
 
     parser.add_argument(
-        "--examples", action="store_true", help="Display example usage of program"
+        "--examples",
+        nargs="?",
+        const="usage",
+        help="Display example usage of program",
     )
 
     return inner
@@ -786,6 +832,36 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
 
         return inner
 
+    def update(sparser: ArgumentParser):
+        """update existing constraint"""
+
+        @tqb_serialize
+        def inner(taskq: TaskQueue, args: Namespace):
+
+            for target in args.targets:
+                constraint = taskq.find_constraint(target)
+                assert constraint is not None, "constraint does not exist, cannot alter"
+                assert (
+                    args.column in consts.CONSTRAINTS_HEADERS
+                ), f"column '{column}' is invalid"
+
+                constraint.__dict__[args.column] = args.value
+
+            if not globals.QUIET_OPTION_SET:
+                print(
+                    util.star_symbol_surround(
+                        "constraint altered", consts.STAR_MSG_OUTPUT_WIDTH
+                    )
+                )
+
+        sparser.add_argument(
+            "targets", nargs="+", help="header name to add constraint to"
+        )
+        sparser.add_argument("column", help="column to modify")
+        sparser.add_argument("value", help="value to set for column")
+
+        return inner
+
     def append(sparser: ArgumentParser):
         """add additional value to group constraints"""
 
@@ -798,7 +874,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
                 target in taskq.constraints
             ), "constraint with HeaderName {target} could not be found"
 
-            assert column in consts.CONSTRAINTS_HEADERS
+            assert column in consts.CONSTRAINTS_HEADERS, f"column '{column}' is invalid"
 
             constraint = taskq.find_constraint_fallback(target)
             parsed_column = constraint.__dict__[column].split("|")
@@ -889,7 +965,7 @@ def constraint(parser: ArgumentParser, root: ArgumentParser):
 
     subcmd = parser.add_subparsers(required=True, help="constraint subcommands")
 
-    for cmd_factory in [add, alter, remove, ls, append, blueprint]:
+    for cmd_factory in [add, alter, update, remove, ls, append, blueprint]:
         parser = subcmd.add_parser(cmd_factory.__name__, help=cmd_factory.__doc__)
         func = cmd_factory(parser)
         parser.set_defaults(func=func)

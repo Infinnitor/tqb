@@ -31,6 +31,7 @@ def default() -> TaskQueue:
             Variant="High|Medium|Low",
             Default="Low",
             Autofill=True,
+            AutoHeader=True,
         ),
         Constraint.kwargs(
             HeaderName="Status",
@@ -39,6 +40,7 @@ def default() -> TaskQueue:
             Role="Status",
             Default="Not Started",
             Autofill=True,
+            AutoHeader=True,
         ),
         Constraint.kwargs(HeaderName="Task", Role="Description"),
     ]
@@ -87,7 +89,7 @@ def todo() -> TaskQueue:
     )
 
 
-def development() -> TaskQueue:
+def dev() -> TaskQueue:
     headers = ["Id", "Task", "Status", "Archived", "Complexity", "Area"]
     constraint_list = [
         Constraint.kwargs(
@@ -107,6 +109,7 @@ def development() -> TaskQueue:
             Variant="High|Medium|Low",
             Default="Low",
             Autofill=True,
+            AutoHeader=True,
         ),
         Constraint.kwargs(
             HeaderName="Status",
@@ -115,13 +118,14 @@ def development() -> TaskQueue:
             Role="Status",
             Default="Not Started",
             Autofill=True,
+            AutoHeader=True,
         ),
         Constraint.kwargs(
             HeaderName="Area",
-            Colours="high=RED|medium=YELLOW|low=BLUE",
-            Variant="Architecture|Feature|Bug Queue|Design|Management|Testing|Release",
+            Variant="Architecture|Feature|Bug|Design|Asset|Management|Testing|Release",
             Default="",
             Autofill=True,
+            AutoHeader=True,
         ),
         Constraint.kwargs(
             HeaderName="Archived",
@@ -252,5 +256,5 @@ def projects() -> TaskQueue:
     )
 
 
-BLUEPRINT_MAP = {v.__name__: v for v in [default, todo, development, sprint, projects]}
+BLUEPRINT_MAP = {v.__name__: v for v in [default, todo, dev, sprint, projects]}
 __all__ = [v for v in BLUEPRINT_MAP.values()]

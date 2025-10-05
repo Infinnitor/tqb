@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/param.h>
 
-
 #define ENDPOINT "venv/bin/python3"
 #define FILEPATH "src/main.py"
 #define DEFAULT_BUF 0x100
@@ -54,7 +53,6 @@ char* trim_ws(char* src) {
 }
 
 
-
 char* dir(const char* path) {
 	char* last_slash = strrchr(path, '/');
 	if (last_slash == NULL) {
@@ -63,7 +61,6 @@ char* dir(const char* path) {
 	char* ptr = strndup(path, (size_t)last_slash - (size_t)path);
 	return ptr;
 }
-
 
 
 int main(int argc, char** argv) {

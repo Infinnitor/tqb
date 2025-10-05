@@ -1,2 +1,2 @@
 #!/bin/sh
-/opt/tqb/venv/bin/python3 src/main.py "$@"
+/opt/tqb/venv/bin/python3 /opt/tqb/src/main.py "$@"

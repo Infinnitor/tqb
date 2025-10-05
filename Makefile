@@ -25,6 +25,7 @@ release:
 
 clean:
 	rm -rf build/*
+	rm -rf venv/
 
 
 install:
